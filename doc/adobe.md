@@ -10,13 +10,13 @@ The delegate function can be set as the following, to use the Adobe SDK API:
     NSMutableDictionary *adjustData= [NSMutableDictionary dictionary];
 
     if (attribution.network != nil)
-        [adjustData setObject:@attribution.network forKey:@"[Adjust]Network"];
+        [adjustData setObject:@attribution.network forKey:@"Adjust Network"];
     if (attribution.campaign != nil)
-        [adjustData setObject:@attribution.campaign forKey:@"[Adjust]Campaign"];
+        [adjustData setObject:@attribution.campaign forKey:@"Adjust Campaign"];
     if (attribution.adgroup != nil)
-        [adjustData setObject:@attribution.adgroup forKey:@"[Adjust]AdGroup"];
+        [adjustData setObject:@attribution.adgroup forKey:@"Adjust AdGroup"];
     if (attribution.creative != nil)
-        [adjustData setObject:@attribution.creative forKey:@"[Adjust]Creative"];
+        [adjustData setObject:@attribution.creative forKey:@"Adjust Creative"];
         
     [ADBMobile trackAction:@"Adjust Campaign Info" data:adjustData];
 }
