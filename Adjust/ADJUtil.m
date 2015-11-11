@@ -1,30 +1,31 @@
 //
 //  ADJUtil.m
-//  Adjust
+//  adjust GmbH
 //
-//  Created by Christian Wellenbrock on 2013-07-05.
-//  Copyright (c) 2013 adjust GmbH. All rights reserved.
+//  Created by Christian Wellenbrock on 05/07/2013.
+//  Copyright (c) 2013-2015 adjust GmbH. All rights reserved.
 //
-
-#import "ADJUtil.h"
-#import "ADJLogger.h"
-#import "UIDevice+ADJAdditions.h"
-#import "ADJAdjustFactory.h"
-#import "NSString+ADJAdditions.h"
-#import "ADJAdjustFactory.h"
 
 #include <sys/xattr.h>
 
-static NSString * const kBaseUrl   = @"https://app.adjust.com";
-static NSString * const kClientSdk = @"ios4.4.1";
+#import "ADJUtil.h"
+#import "ADJLogger.h"
+#import "ADJAdjustFactory.h"
+#import "ADJAdjustFactory.h"
+#import "UIDevice+ADJAdditions.h"
+#import "NSString+ADJAdditions.h"
 
-static NSString * const kDateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
 static NSDateFormatter *dateFormat;
 
-#pragma mark -
+static NSString * const kClientSdk  = @"ios4.4.1";
+static NSString * const kBaseUrl    = @"https://app.adjust.com";
+static NSString * const kDateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
+
 @implementation ADJUtil
 
-+ (void) initialize {
+#pragma mark - Object lifecycle
+
++ (void)initialize {
     dateFormat = [[NSDateFormatter alloc] init];
 
     if ([NSCalendar instancesRespondToSelector:@selector(calendarWithIdentifier:)]) {
@@ -44,13 +45,14 @@ static NSDateFormatter *dateFormat;
 #pragma clang diagnostic pop
         }
 
-
         dateFormat.calendar = [NSCalendar calendarWithIdentifier:calendarIdentifier];
     }
 
     dateFormat.locale = [NSLocale systemLocale];
     [dateFormat setDateFormat:kDateFormat];
 }
+
+#pragma mark - Public methods
 
 + (NSString *)baseUrl {
     return kBaseUrl;
@@ -60,12 +62,12 @@ static NSDateFormatter *dateFormat;
     return kClientSdk;
 }
 
-// inspired by https://gist.github.com/kevinbarrett/2002382
+// Inspired by https://gist.github.com/kevinbarrett/2002382
 + (void)excludeFromBackup:(NSString *)path {
-    NSURL *url = [NSURL fileURLWithPath:path];
-    const char* filePath = [[url path] fileSystemRepresentation];
-    const char* attrName = "com.apple.MobileBackup";
-    id<ADJLogger> logger = ADJAdjustFactory.logger;
+    NSURL *url              = [NSURL fileURLWithPath:path];
+    const char* filePath    = [[url path] fileSystemRepresentation];
+    const char* attrName    = "com.apple.MobileBackup";
+    id<ADJLogger> logger    = ADJAdjustFactory.logger;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code"
@@ -73,15 +75,19 @@ static NSDateFormatter *dateFormat;
     if (&NSURLIsExcludedFromBackupKey == nil) {
         u_int8_t attrValue = 1;
         int result = setxattr(filePath, attrName, &attrValue, sizeof(attrValue), 0, 0);
+
         if (result != 0) {
             [logger debug:@"Failed to exclude '%@' from backup", url.lastPathComponent];
         }
-    } else { // iOS 5.0 and higher
-        // First try and remove the extended attribute if it is present
+    } else {
+        // iOS 5.0 and higher.
+        // First try and remove the extended attribute if it is present.
         ssize_t result = getxattr(filePath, attrName, NULL, sizeof(u_int8_t), 0, 0);
+
         if (result != -1) {
-            // The attribute exists, we need to remove it
+            // The attribute exists, we need to remove it.
             int removeResult = removexattr(filePath, attrName, 0);
+
             if (removeResult == 0) {
                 [logger debug:@"Removed extended attribute on file '%@'", url];
             }
@@ -92,32 +98,31 @@ static NSDateFormatter *dateFormat;
         BOOL success = [url setResourceValue:[NSNumber numberWithBool:YES]
                                       forKey:NSURLIsExcludedFromBackupKey
                                        error:&error];
+
         if (!success || error != nil) {
             [logger debug:@"Failed to exclude '%@' from backup (%@)", url.lastPathComponent, error.localizedDescription];
         }
     }
 #pragma clang diagnostic pop
-
 }
 
-+ (NSString *)formatSeconds1970:(double) value {
++ (NSString *)formatSeconds1970:(double)value {
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:value];
-
     return [self formatDate:date];
 }
 
-
-+ (NSString *)formatDate:(NSDate *) value {
++ (NSString *)formatDate:(NSDate *)value {
     return [dateFormat stringFromDate:value];
 }
-
 
 + (NSDictionary *)buildJsonDict:(NSData *)jsonData {
     if (jsonData == nil) {
         return nil;
     }
+
     NSError *error = nil;
     NSDictionary *jsonDict = nil;
+
     @try {
         jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     } @catch (NSException *ex) {
@@ -133,21 +138,21 @@ static NSDateFormatter *dateFormat;
     return jsonDict;
 }
 
-+ (NSString *)getFullFilename:(NSString *) baseFilename {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *path = [paths objectAtIndex:0];
-    NSString *filename = [path stringByAppendingPathComponent:baseFilename];
++ (NSString *)getFullFilename:(NSString *)baseFilename {
+    NSArray *paths      = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *path      = [paths objectAtIndex:0];
+    NSString *filename  = [path stringByAppendingPathComponent:baseFilename];
+
     return filename;
 }
 
-+ (id)readObject:(NSString *)filename
-      objectName:(NSString *)objectName
-           class:(Class) classToRead
-{
++ (id)readObject:(NSString *)filename objectName:(NSString *)objectName class:(Class)classToRead {
     id<ADJLogger> logger = [ADJAdjustFactory logger];
+
     @try {
         NSString *fullFilename = [ADJUtil getFullFilename:filename];
         id object = [NSKeyedUnarchiver unarchiveObjectWithFile:fullFilename];
+
         if ([object isKindOfClass:classToRead]) {
             [logger debug:@"Read %@: %@", objectName, object];
             return object;
@@ -156,19 +161,18 @@ static NSDateFormatter *dateFormat;
         } else {
             [logger error:@"Failed to read %@ file", objectName];
         }
-    } @catch (NSException *ex ) {
+    } @catch (NSException *ex) {
         [logger error:@"Failed to read %@ file (%@)", objectName, ex];
     }
 
     return nil;
 }
 
-+ (void)writeObject:(id)object
-           filename:(NSString *)filename
-         objectName:(NSString *)objectName {
-    id<ADJLogger> logger = [ADJAdjustFactory logger];
-    NSString *fullFilename = [ADJUtil getFullFilename:filename];
-    BOOL result = [NSKeyedArchiver archiveRootObject:object toFile:fullFilename];
++ (void)writeObject:(id)object filename:(NSString *)filename objectName:(NSString *)objectName {
+    id<ADJLogger> logger    = [ADJAdjustFactory logger];
+    NSString *fullFilename  = [ADJUtil getFullFilename:filename];
+    BOOL result             = [NSKeyedArchiver archiveRootObject:object toFile:fullFilename];
+
     if (result == YES) {
         [ADJUtil excludeFromBackup:fullFilename];
         [logger debug:@"Wrote %@: %@", objectName, object];
@@ -177,25 +181,25 @@ static NSDateFormatter *dateFormat;
     }
 }
 
-+ (NSString *) queryString:(NSDictionary *)parameters {
++ (NSString *)queryString:(NSDictionary *)parameters {
     NSMutableArray *pairs = [NSMutableArray array];
+
     for (NSString *key in parameters) {
-        NSString *value = [parameters objectForKey:key];
-        NSString *escapedValue = [value adjUrlEncode];
-        NSString *escapedKey = [key adjUrlEncode];
-        NSString *pair = [NSString stringWithFormat:@"%@=%@", escapedKey, escapedValue];
+        NSString *value         = [parameters objectForKey:key];
+        NSString *escapedValue  = [value adjUrlEncode];
+        NSString *escapedKey    = [key adjUrlEncode];
+        NSString *pair          = [NSString stringWithFormat:@"%@=%@", escapedKey, escapedValue];
         [pairs addObject:pair];
     }
 
-    double now = [NSDate.date timeIntervalSince1970];
-    NSString *dateString = [ADJUtil formatSeconds1970:now];
-    NSString *escapedDate = [dateString adjUrlEncode];
-    NSString *sentAtPair = [NSString stringWithFormat:@"%@=%@", @"sent_at", escapedDate];
-
+    double now              = [NSDate.date timeIntervalSince1970];
+    NSString *dateString    = [ADJUtil formatSeconds1970:now];
+    NSString *escapedDate   = [dateString adjUrlEncode];
+    NSString *sentAtPair    = [NSString stringWithFormat:@"%@=%@", @"sent_at", escapedDate];
     [pairs addObject:sentAtPair];
 
     NSString *queryString = [pairs componentsJoinedByString:@"&"];
-    
+
     return queryString;
 }
 
@@ -205,9 +209,9 @@ static NSDateFormatter *dateFormat;
 
 + (NSString *)formatErrorMessage:(NSString *)prefixErrorMessage
               systemErrorMessage:(NSString *)systemErrorMessage
-              suffixErrorMessage:(NSString *)suffixErrorMessage
-{
-    NSString * errorMessage = [NSString stringWithFormat:@"%@ (%@)", prefixErrorMessage, systemErrorMessage];
+              suffixErrorMessage:(NSString *)suffixErrorMessage {
+    NSString *errorMessage = [NSString stringWithFormat:@"%@ (%@)", prefixErrorMessage, systemErrorMessage];
+
     if (suffixErrorMessage == nil) {
         return errorMessage;
     } else {
@@ -216,21 +220,20 @@ static NSDateFormatter *dateFormat;
 }
 
 + (void)sendRequest:(NSMutableURLRequest *)request
-           prefixErrorMessage:(NSString *)prefixErrorMessage
-          jsonResponseHandler:(void (^) (NSDictionary * jsonDict))jsonResponseHandler
-{
+ prefixErrorMessage:(NSString *)prefixErrorMessage
+jsonResponseHandler:(void (^)(NSDictionary *jsonDict))jsonResponseHandler {
     [ADJUtil sendRequest:request
-             prefixErrorMessage:prefixErrorMessage
-             suffixErrorMessage:nil
-            jsonResponseHandler:jsonResponseHandler];
+      prefixErrorMessage:prefixErrorMessage
+      suffixErrorMessage:nil
+     jsonResponseHandler:jsonResponseHandler];
 }
 
 + (void)sendRequest:(NSMutableURLRequest *)request
-             prefixErrorMessage:(NSString *)prefixErrorMessage
-             suffixErrorMessage:(NSString *)suffixErrorMessage
-            jsonResponseHandler:(void (^) (NSDictionary * jsonDict))jsonResponseHandler
-{
+ prefixErrorMessage:(NSString *)prefixErrorMessage
+ suffixErrorMessage:(NSString *)suffixErrorMessage
+jsonResponseHandler:(void (^)(NSDictionary *jsonDict))jsonResponseHandler {
     Class NSURLSessionClass = NSClassFromString(@"NSURLSession");
+
     if (NSURLSessionClass != nil) {
         [ADJUtil sendNSURLSessionRequest:request
                       prefixErrorMessage:prefixErrorMessage
@@ -247,14 +250,18 @@ static NSDateFormatter *dateFormat;
 + (void)sendNSURLSessionRequest:(NSMutableURLRequest *)request
              prefixErrorMessage:(NSString *)prefixErrorMessage
              suffixErrorMessage:(NSString *)suffixErrorMessage
-            jsonResponseHandler:(void (^) (NSDictionary * jsonDict))jsonResponseHandler
-{
+            jsonResponseHandler:(void (^)(NSDictionary *jsonDict))jsonResponseHandler {
     NSURLSession *session = [NSURLSession sharedSession];
-
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request
                                             completionHandler:
                                   ^(NSData *data, NSURLResponse *response, NSError *error) {
-                                      NSDictionary * jsonResponse = [ADJUtil completionHandler:data response:(NSHTTPURLResponse *)response error:error prefixErrorMessage:prefixErrorMessage suffixErrorMessage:suffixErrorMessage];
+                                      NSDictionary *jsonResponse =
+                                      [ADJUtil completionHandler:data
+                                                        response:(NSHTTPURLResponse *)response
+                                                           error:error
+                                              prefixErrorMessage:prefixErrorMessage
+                                              suffixErrorMessage:suffixErrorMessage];
+
                                       jsonResponseHandler(jsonResponse);
                                   }];
     [task resume];
@@ -263,8 +270,7 @@ static NSDateFormatter *dateFormat;
 + (void)sendNSURLConnectionRequest:(NSMutableURLRequest *)request
                 prefixErrorMessage:(NSString *)prefixErrorMessage
                 suffixErrorMessage:(NSString *)suffixErrorMessage
-               jsonResponseHandler:(void (^) (NSDictionary * jsonDict))jsonResponseHandler
-{
+               jsonResponseHandler:(void (^)(NSDictionary *jsonDict))jsonResponseHandler {
     NSError *responseError = nil;
     NSHTTPURLResponse *urlResponse = nil;
 
@@ -275,11 +281,11 @@ static NSDateFormatter *dateFormat;
                                                              error:&responseError];
 #pragma clang diagnostic pop
 
-    NSDictionary * jsonResponse = [ADJUtil completionHandler:responseData
-                                                    response:(NSHTTPURLResponse *)urlResponse
-                                                       error:responseError
-                                          prefixErrorMessage:prefixErrorMessage
-                                          suffixErrorMessage:suffixErrorMessage];
+    NSDictionary *jsonResponse = [ADJUtil completionHandler:responseData
+                                                   response:(NSHTTPURLResponse *)urlResponse
+                                                      error:responseError
+                                         prefixErrorMessage:prefixErrorMessage
+                                         suffixErrorMessage:suffixErrorMessage];
 
     jsonResponseHandler(jsonResponse);
 }
@@ -288,26 +294,25 @@ static NSDateFormatter *dateFormat;
                            response:(NSHTTPURLResponse *)urlResponse
                               error:(NSError *)responseError
                  prefixErrorMessage:(NSString *)prefixErrorMessage
-                 suffixErrorMessage:(NSString *)suffixErrorMessage
-{
-    // connection error
+                 suffixErrorMessage:(NSString *)suffixErrorMessage {
+    // Connection error.
     if (responseError != nil) {
-        [ADJAdjustFactory.logger error:[ADJUtil formatErrorMessage:prefixErrorMessage
-                                                systemErrorMessage:responseError.localizedDescription
-                                                suffixErrorMessage:suffixErrorMessage]];
+        [[ADJAdjustFactory logger] error:[ADJUtil formatErrorMessage:prefixErrorMessage
+                                                  systemErrorMessage:responseError.localizedDescription
+                                                  suffixErrorMessage:suffixErrorMessage]];
         return nil;
     }
     if ([ADJUtil isNull:responseData]) {
-        [ADJAdjustFactory.logger error:[ADJUtil formatErrorMessage:prefixErrorMessage
-                                                systemErrorMessage:@"empty error"
-                                                suffixErrorMessage:suffixErrorMessage]];
+        [[ADJAdjustFactory logger] error:[ADJUtil formatErrorMessage:prefixErrorMessage
+                                                  systemErrorMessage:@"empty error"
+                                                  suffixErrorMessage:suffixErrorMessage]];
         return nil;
     }
 
     NSString *responseString = [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] adjTrim];
     NSInteger statusCode = urlResponse.statusCode;
 
-    [ADJAdjustFactory.logger verbose:@"Response: %@", responseString];
+    [[ADJAdjustFactory logger] verbose:@"Response: %@", responseString];
 
     NSDictionary *jsonDict = [ADJUtil buildJsonDict:responseData];
 
@@ -315,18 +320,19 @@ static NSDateFormatter *dateFormat;
         return nil;
     }
 
-    NSString* messageResponse = [jsonDict objectForKey:@"message"];
+    NSString *messageResponse = [jsonDict objectForKey:@"message"];
 
     if (messageResponse == nil) {
         messageResponse = @"No message found";
     }
 
     if (statusCode == 200) {
-        [ADJAdjustFactory.logger info:@"%@", messageResponse];
+        [[ADJAdjustFactory logger] info:@"%@", messageResponse];
     } else {
-        [ADJAdjustFactory.logger error:@"%@", messageResponse];
+        [[ADJAdjustFactory logger] error:@"%@", messageResponse];
     }
-
+    
     return jsonDict;
 }
+
 @end

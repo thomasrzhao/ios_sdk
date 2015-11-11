@@ -1,27 +1,28 @@
 //
 //  ADJPackageHandler.h
-//  Adjust
+//  adjust GmbH
 //
-//  Created by Christian Wellenbrock on 2013-07-03.
-//  Copyright (c) 2013 adjust GmbH. All rights reserved.
+//  Created by Christian Wellenbrock on 03/07/2013.
+//  Copyright (c) 2013-2015 adjust GmbH. All rights reserved.
 //
+
 #import <Foundation/Foundation.h>
 
-#import "ADJActivityPackage.h"
 #import "ADJPackageHandler.h"
 #import "ADJActivityHandler.h"
+#import "ADJActivityPackage.h"
 
 @protocol ADJPackageHandler
 
 - (id)initWithActivityHandler:(id<ADJActivityHandler>)activityHandler
                   startPaused:(BOOL)startPaused;
 
-- (void)addPackage:(ADJActivityPackage *)package;
-- (void)sendFirstPackage;
-- (void)sendNextPackage;
-- (void)closeFirstPackage;
 - (void)pauseSending;
 - (void)resumeSending;
+- (void)sendNextPackage;
+- (void)sendFirstPackage;
+- (void)closeFirstPackage;
+- (void)addPackage:(ADJActivityPackage *)package;
 - (void)finishedTracking:(NSDictionary *)jsonDict;
 
 @end

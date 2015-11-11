@@ -1,6 +1,6 @@
 //
 //  ADJTimerCycle.m
-//  adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 03/06/15.
 //  Copyright (c) 2015 adjust GmbH. All rights reserved.
@@ -8,34 +8,35 @@
 
 #import "ADJTimerCycle.h"
 
-static const uint64_t kTimerLeeway   =  1 * NSEC_PER_SEC; // 1 second
+static const uint64_t kTimerLeeway = 1 * NSEC_PER_SEC;   // 1 second
 
-#pragma mark - private
 @interface ADJTimerCycle()
 
-@property (nonatomic) dispatch_source_t source;
 @property (nonatomic, assign) BOOL suspended;
+@property (nonatomic) dispatch_source_t source;
 
 @end
 
-#pragma mark -
 @implementation ADJTimerCycle
 
+#pragma mark - Object lifecycle
+
 + (ADJTimerCycle *)timerWithBlock:(dispatch_block_t)block
-                       queue:(dispatch_queue_t)queue
-                   startTime:(NSTimeInterval)startTime
-                intervalTime:(NSTimeInterval)intervalTime
-{
+                            queue:(dispatch_queue_t)queue
+                        startTime:(NSTimeInterval)startTime
+                     intervalTime:(NSTimeInterval)intervalTime {
     return [[ADJTimerCycle alloc] initBlock:block queue:queue startTime:startTime intervalTime:intervalTime];
 }
 
 - (id)initBlock:(dispatch_block_t)block
           queue:(dispatch_queue_t)queue
       startTime:(NSTimeInterval)startTime
-   intervalTime:(NSTimeInterval)intervalTime
-{
+   intervalTime:(NSTimeInterval)intervalTime {
     self = [super init];
-    if (self == nil) return nil;
+
+    if (self == nil) {
+        return nil;
+    }
 
     self.source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
 
@@ -51,17 +52,25 @@ static const uint64_t kTimerLeeway   =  1 * NSEC_PER_SEC; // 1 second
     return self;
 }
 
+#pragma mark - Public methods
+
 - (void)resume {
-    if (!self.suspended) return;
+    if (!self.suspended) {
+        return;
+    }
 
     dispatch_resume(self.source);
+
     self.suspended = NO;
 }
 
 - (void)suspend {
-    if (self.suspended) return;
+    if (self.suspended) {
+        return;
+    }
 
     dispatch_suspend(self.source);
+    
     self.suspended = YES;
 }
 

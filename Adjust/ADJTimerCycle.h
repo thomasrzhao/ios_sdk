@@ -1,6 +1,6 @@
 //
 //  ADJTimerCycle.h
-//  adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 03/06/15.
 //  Copyright (c) 2015 adjust GmbH. All rights reserved.
@@ -13,9 +13,9 @@
 @property (nonatomic, assign) NSTimeInterval startTime;
 
 + (ADJTimerCycle *)timerWithBlock:(dispatch_block_t)block
-                       queue:(dispatch_queue_t)queue
-                   startTime:(NSTimeInterval)startTime
-                intervalTime:(NSTimeInterval)intervalTime;
+                            queue:(dispatch_queue_t)queue
+                        startTime:(NSTimeInterval)startTime
+                     intervalTime:(NSTimeInterval)intervalTime;
 
 - (id)initBlock:(dispatch_block_t)block
           queue:(dispatch_queue_t)queue
@@ -24,4 +24,5 @@
 
 - (void)resume;
 - (void)suspend;
+
 @end

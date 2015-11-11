@@ -1,42 +1,43 @@
 //
 //  ADJUtil.h
-//  Adjust
+//  adjust GmbH
 //
-//  Created by Christian Wellenbrock on 2013-07-05.
-//  Copyright (c) 2013 adjust GmbH. All rights reserved.
+//  Created by Christian Wellenbrock on 05/07/2013.
+//  Copyright (c) 2013-2015 adjust GmbH. All rights reserved.
 //
+
 #import <Foundation/Foundation.h>
+
 #import "ADJActivityKind.h"
 
 @interface ADJUtil : NSObject
 
++ (BOOL)isNull:(id)value;
++ (void)excludeFromBackup:(NSString *)filename;
++ (NSDictionary *)buildJsonDict:(NSData *)jsonData;
+
 + (NSString *)baseUrl;
 + (NSString *)clientSdk;
-
-+ (void)excludeFromBackup:(NSString *)filename;
-+ (NSString *)formatSeconds1970:(double)value;
 + (NSString *)formatDate:(NSDate *)value;
-+ (NSDictionary *) buildJsonDict:(NSData *)jsonData;
-
-+ (NSString *)getFullFilename:(NSString *) baseFilename;
++ (NSString *)formatSeconds1970:(double)value;
++ (NSString *)queryString:(NSDictionary *)parameters;
++ (NSString *)getFullFilename:(NSString *)baseFilename;
 
 + (id)readObject:(NSString *)filename
       objectName:(NSString *)objectName
-           class:(Class) classToRead;
+           class:(Class)classToRead;
 
 + (void)writeObject:(id)object
            filename:(NSString *)filename
          objectName:(NSString *)objectName;
 
-+ (NSString *) queryString:(NSDictionary *)parameters;
-+ (BOOL)isNull:(id)value;
 + (void)sendRequest:(NSMutableURLRequest *)request
  prefixErrorMessage:(NSString *)prefixErrorMessage
-jsonResponseHandler:(void (^) (NSDictionary * jsonDict))jsonResponseHandler;
+jsonResponseHandler:(void (^)(NSDictionary *jsonDict))jsonResponseHandler;
 
 + (void)sendRequest:(NSMutableURLRequest *)request
  prefixErrorMessage:(NSString *)prefixErrorMessage
  suffixErrorMessage:(NSString *)suffixErrorMessage
-jsonResponseHandler:(void (^) (NSDictionary * jsonDict))jsonResponseHandler;
+jsonResponseHandler:(void (^)(NSDictionary *jsonDict))jsonResponseHandler;
 
 @end

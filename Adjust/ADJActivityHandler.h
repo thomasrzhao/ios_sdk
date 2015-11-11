@@ -1,9 +1,9 @@
 //
 //  ADJActivityHandler.h
-//  Adjust
+//  adjust
 //
-//  Created by Christian Wellenbrock on 2013-07-01.
-//  Copyright (c) 2013 adjust GmbH. All rights reserved.
+//  Created by Christian Wellenbrock on 01/07/2013.
+//  Copyright (c) 2013-2015 adjust GmbH. All rights reserved.
 //
 
 #import "Adjust.h"
@@ -13,27 +13,25 @@
 
 - (id)initWithConfig:(ADJConfig *)adjustConfig;
 
-- (void)trackSubsessionStart;
-- (void)trackSubsessionEnd;
-
-- (void)trackEvent:(ADJEvent *)event;
-
-- (void)finishedTracking:(NSDictionary *)jsonDict;
-- (void)setEnabled:(BOOL)enabled;
 - (BOOL)isEnabled;
-- (void)appWillOpenUrl:(NSURL*)url;
+- (ADJAttribution *)attribution;
+
+- (void)trackSubsessionEnd;
+- (void)trackSubsessionStart;
+
+- (void)setEnabled:(BOOL)enabled;
+- (void)appWillOpenUrl:(NSURL *)url;
+- (void)trackEvent:(ADJEvent *)event;
+- (void)setOfflineMode:(BOOL)offline;
 - (void)setDeviceToken:(NSData *)deviceToken;
 
-- (ADJAttribution*) attribution;
-- (void) setAttribution:(ADJAttribution*)attribution;
-- (void) setAskingAttribution:(BOOL)askingAttribution;
+- (void)setAttribution:(ADJAttribution *)attribution;
+- (void)setAskingAttribution:(BOOL)askingAttribution;
 
-- (BOOL) updateAttribution:(ADJAttribution*) attribution;
-- (void) setIadDate:(NSDate*)iAdImpressionDate withPurchaseDate:(NSDate*)appPurchaseDate;
-
-- (void) launchAttributionDelegate;
-
-- (void) setOfflineMode:(BOOL)offline;
+- (void)launchAttributionDelegate;
+- (void)finishedTracking:(NSDictionary *)jsonDict;
+- (BOOL)updateAttribution:(ADJAttribution *)attribution;
+- (void)setIadDate:(NSDate *)iAdImpressionDate withPurchaseDate:(NSDate *)appPurchaseDate;
 
 @end
 

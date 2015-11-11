@@ -1,95 +1,138 @@
 //
 //  ADJConfig.h
-//  adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 30/10/14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
+
 #import "ADJLogger.h"
 #import "ADJAttribution.h"
 
 /**
- * Optional delegate that will get informed about tracking results
+ *  Optional delegate that will get informed about tracking results.
  */
 @protocol  AdjustDelegate
 @optional
 
 /**
- * Optional delegate method that gets called when the attribution information changed
+ *  Optional delegate method that gets called when the attribution information changed.
  *
- * @param attribution The attribution information. See ADJAttribution for details.
+ *  @param attribution The attribution information. See ADJAttribution for details.
  */
 - (void)adjustAttributionChanged:(ADJAttribution *)attribution;
 
 @end
 
+/**
+ *  Adjust configuration object.
+ */
 @interface ADJConfig : NSObject<NSCopying>
 
-@property (nonatomic, copy, readonly) NSString *appToken;
-@property (nonatomic, copy, readonly) NSString *environment;
+/** 
+ *  @property   sdkPrefix
+ *
+ *  @brief  Property used to get and set SDK prefix.
+ */
 @property (nonatomic, copy) NSString *sdkPrefix;
+
+/**
+ *  @property   defaultTracker
+ *
+ *  @brief  Used to set default tracker name.
+ */
 @property (nonatomic, copy) NSString *defaultTracker;
 
 /**
- * Configuration object for the initialization of the Adjust SDK.
+ *  @property   appToken
  *
- * @param appToken The App Token of your app. This unique identifier can
- *     be found it in your dashboard at http://adjust.com and should always
- *     be 12 characters long.
- * @param environment The current environment your app. We use this environment to
- *     distinguish between real traffic and artificial traffic from test devices.
- *     It is very important that you keep this value meaningful at all times!
- *     Especially if you are tracking revenue.
+ *  @brief  Used to read app token.
  */
-+ (ADJConfig*)configWithAppToken:(NSString *)appToken environment:(NSString *)environment;
-- (id)initWithAppToken:(NSString *)appToken environment:(NSString *)environment;
+@property (nonatomic, copy, readonly) NSString *appToken;
 
 /**
- * Change the verbosity of Adjust's logs.
+ *  @property   environment
  *
- * You can increase or reduce the amount of logs from Adjust by passing
- * one of the following parameters. Use Log.ASSERT to disable all logging.
+ *  @brief  Used to read environment.
+ *          (ADJEnvironmentSandbox or ADJEnvironmentProduction)
+ */
+@property (nonatomic, copy, readonly) NSString *environment;
+
+/**
+ *  @property   logLevel
  *
- * @param logLevel The desired minimum log level (default: info)
- *     Must be one of the following:
- *      - ADJLogLevelVerbose (enable all logging)
- *      - ADJLogLevelDebug   (enable more logging)
- *      - ADJLogLevelInfo    (the default)
- *      - ADJLogLevelWarn    (disable info logging)
- *      - ADJLogLevelError   (disable warnings as well)
- *      - ADJLogLevelAssert  (disable errors as well)
+ *  @brief  Change the verbosity of Adjust's logs.
+ *          You can increase or reduce the amount of logs from Adjust by passing
+ *          one of the following parameters. Use Log.ASSERT to disable all logging.
+ *
+ *          The desired minimum log level (default: info).
+ *          Must be one of the following:
+ *              - ADJLogLevelVerbose (enable all logging)
+ *              - ADJLogLevelDebug   (enable more logging)
+ *              - ADJLogLevelInfo    (the default)
+ *              - ADJLogLevelWarn    (disable info logging)
+ *              - ADJLogLevelError   (disable warnings as well)
+ *              - ADJLogLevelAssert  (disable errors as well)
  */
 @property (nonatomic, assign) ADJLogLevel logLevel;
 
 /**
- * Enable event buffering if your app triggers a lot of events.
- * When enabled, events get buffered and only get tracked each
- * minute. Buffered events are still persisted, of course.
+ *  @property   eventBufferingEnabled
  *
- * @param eventBufferingEnabled Enable or disable event buffering
+ *  @brief  Enable event buffering if your app triggers a lot of events.
+ *          When enabled, events get buffered and only get tracked each
+ *          minute. Buffered events are still persisted, of course.
  */
 @property (nonatomic, assign) BOOL eventBufferingEnabled;
 
 /**
- * Disable macMd5 tracking if your privacy constraints require it.
+ *  @property   macMd5TrackingEnabled
  *
- * @param macMd5TrackingEnabled Enable or disable tracking of
- * the MD5 hash of the MAC address
+ *  @brief  Enable or disable tracking of the MD5 hash of the MAC address.
+ *          Disable macMd5 tracking if your privacy constraints require it.
  */
 @property (nonatomic, assign) BOOL macMd5TrackingEnabled;
 
 /**
- * Set the optional delegate that will inform you about attribution
+ *  @property   delegate
  *
- * See the AdjustDelegate declaration above for details
- *
- * @param delegate The delegate that might implement the optional delegate
- *     methods like adjustAttributionChanged:
+ *  @brief  The delegate that might implement the optional delegate
+ *          methods like adjustAttributionChanged.
+ *          Set the optional delegate that will inform you about attribution.
+ *          See the AdjustDelegate declaration above for details.
  */
 @property (nonatomic, weak) NSObject<AdjustDelegate> *delegate;
+
+/**
+ *  @property   hasDelegate
+ *
+ *  @brief  Check if delegate has been set for ADJConfig object.
+ */
 @property (nonatomic, assign) BOOL hasDelegate;
 
-- (BOOL) isValid;
+/**
+ *  @brief  Configuration object for the initialization of the Adjust SDK.
+ *
+ *  @param  appToken    The App Token of your app. This unique identifier can
+ *                      be found it in your dashboard at http://adjust.com and should always
+ *                      be 12 characters long.
+ *  @param  environment The current environment your app. We use this environment to
+ *                      distinguish between real traffic and artificial traffic from test devices.
+ *                      It is very important that you keep this value meaningful at all times!
+ *                      Especially if you are tracking revenue.
+ */
++ (ADJConfig *)configWithAppToken:(NSString *)appToken
+                      environment:(NSString *)environment;
+- (id)initWithAppToken:(NSString *)appToken
+           environment:(NSString *)environment;
+
+/**
+ *  @brief  Check if ADJConfig object is valid.
+ *
+ *  @return Boolean indicating wether ADJConfig is valid or not.
+ */
+- (BOOL)isValid;
+
 @end

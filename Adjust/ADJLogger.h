@@ -1,10 +1,11 @@
 //
 //  ADJLogger.h
-//  Adjust
+//  adjust GmbH
 //
-//  Created by Christian Wellenbrock on 2012-11-15.
-//  Copyright (c) 2012-2014 adjust GmbH. All rights reserved.
+//  Created by Christian Wellenbrock on 15/11/2012.
+//  Copyright (c) 2012-2015 adjust GmbH. All rights reserved.
 //
+
 #import <Foundation/Foundation.h>
 
 typedef enum {
@@ -19,8 +20,6 @@ typedef enum {
 // A simple logger with multiple log levels.
 @protocol ADJLogger
 
-- (void)setLogLevel:(ADJLogLevel)logLevel;
-
 - (void)verbose:(NSString *)message, ...;
 - (void)debug:  (NSString *)message, ...;
 - (void)info:   (NSString *)message, ...;
@@ -28,10 +27,12 @@ typedef enum {
 - (void)error:  (NSString *)message, ...;
 - (void)assert: (NSString *)message, ...;
 
+- (void)setLogLevel:(ADJLogLevel)logLevel;
+
 @end
 
 @interface ADJLogger : NSObject <ADJLogger>
 
-+ (ADJLogLevel) LogLevelFromString: (NSString *) logLevelString;
++ (ADJLogLevel)LogLevelFromString:(NSString *)logLevelString;
 
 @end

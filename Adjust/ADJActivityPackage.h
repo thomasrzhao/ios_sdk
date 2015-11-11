@@ -1,23 +1,23 @@
 //
 //  ADJActivityPackage.h
-//  Adjust
+//  adjust GmbH
 //
-//  Created by Christian Wellenbrock on 2013-07-03.
-//  Copyright (c) 2013 adjust GmbH. All rights reserved.
+//  Created by Christian Wellenbrock on 03/07/2013.
+//  Copyright (c) 2013-2015 adjust GmbH. All rights reserved.
 //
 
 #import "ADJActivityKind.h"
 
 @interface ADJActivityPackage : NSObject <NSCoding>
 
-// data
+// Data
 @property (nonatomic, copy) NSString *path;
 @property (nonatomic, copy) NSString *clientSdk;
 @property (nonatomic, retain) NSDictionary *parameters;
 
-// logs
-@property (nonatomic, assign) ADJActivityKind activityKind;
+// Logs
 @property (nonatomic, copy) NSString *suffix;
+@property (nonatomic, assign) ADJActivityKind activityKind;
 
 - (NSString *)extendedString;
 - (NSString *)successMessage;

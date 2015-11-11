@@ -1,9 +1,9 @@
 //
 //  ADJActivityState.m
-//  Adjust
+//  adjust GmbH
 //
-//  Created by Christian Wellenbrock on 2013-07-02.
-//  Copyright (c) 2013 adjust GmbH. All rights reserved.
+//  Created by Christian Wellenbrock on 02/07/2013.
+//  Copyright (c) 2013-2015 adjust GmbH. All rights reserved.
 //
 
 #import "ADJActivityState.h"
@@ -11,65 +11,42 @@
 
 static const int kTransactionIdCount = 10;
 
-#pragma mark public implementation
 @implementation ADJActivityState
+
+#pragma mark - Object lifecycle
 
 - (id)init {
     self = [super init];
-    if (self == nil) return nil;
 
-    // create UUID for new devices
+    if (self == nil) {
+        return nil;
+    }
+
+    // Create UUID for new devices.
     self.uuid = [UIDevice.currentDevice adjCreateUuid];
 
-    self.eventCount      = 0;
-    self.sessionCount    = 0;
-    self.subsessionCount = -1; // -1 means unknown
-    self.sessionLength   = -1;
-    self.timeSpent       = -1;
-    self.lastActivity    = -1;
-    self.lastInterval    = -1;
-    self.transactionIds  = [NSMutableArray arrayWithCapacity:kTransactionIdCount];
-    self.enabled         = YES;
-    self.askingAttribution           = NO;
+    self.eventCount         = 0;
+    self.sessionCount       = 0;
+    self.subsessionCount    = -1; // -1 means unknown
+    self.sessionLength      = -1;
+    self.timeSpent          = -1;
+    self.lastActivity       = -1;
+    self.lastInterval       = -1;
+    self.transactionIds     = [NSMutableArray arrayWithCapacity:kTransactionIdCount];
+    self.enabled            = YES;
+    self.askingAttribution  = NO;
 
     return self;
 }
 
-- (void)resetSessionAttributes:(double)now {
-    self.subsessionCount = 1;
-    self.sessionLength   = 0;
-    self.timeSpent       = 0;
-    self.lastActivity    = now;
-    self.lastInterval    = -1;
-}
-
-- (void)addTransactionId:(NSString *)transactionId {
-    if (self.transactionIds == nil) { // create array
-        self.transactionIds = [NSMutableArray arrayWithCapacity:kTransactionIdCount];
-    }
-
-    if (self.transactionIds.count == kTransactionIdCount) {
-        [self.transactionIds removeObjectAtIndex:0]; // make space
-    }
-
-    [self.transactionIds addObject:transactionId]; // add new ID
-}
-
-- (BOOL)findTransactionId:(NSString *)transactionId {
-    return [self.transactionIds containsObject:transactionId];
-}
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"ec:%d sc:%d ssc:%d ask:%d sl:%.1f ts:%.1f la:%.1f",
-            self.eventCount, self.sessionCount, self.subsessionCount, self.askingAttribution, self.sessionLength,
-            self.timeSpent, self.lastActivity];
-}
-
-#pragma mark NSCoding
+#pragma mark - NSCoding
 
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super init];
-    if (self == nil) return nil;
+
+    if (self == nil) {
+        return nil;
+    }
 
     self.eventCount        = [decoder decodeIntForKey:@"eventCount"];
     self.sessionCount      = [decoder decodeIntForKey:@"sessionCount"];
@@ -78,7 +55,7 @@ static const int kTransactionIdCount = 10;
     self.timeSpent         = [decoder decodeDoubleForKey:@"timeSpent"];
     self.lastActivity      = [decoder decodeDoubleForKey:@"lastActivity"];
 
-    // default values for migrating devices
+    // Default values for migrating devices.
     if ([decoder containsValueForKey:@"uuid"]) {
         self.uuid              = [decoder decodeObjectForKey:@"uuid"];
     }
@@ -125,9 +102,11 @@ static const int kTransactionIdCount = 10;
     [encoder encodeBool:self.askingAttribution forKey:@"askingAttribution"];
 }
 
--(id)copyWithZone:(NSZone *)zone
-{
-    ADJActivityState* copy = [[[self class] allocWithZone:zone] init];
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone {
+    ADJActivityState *copy = [[[self class] allocWithZone:zone] init];
+
     if (copy) {
         copy.sessionCount      = self.sessionCount;
         copy.subsessionCount   = self.subsessionCount;
@@ -139,10 +118,45 @@ static const int kTransactionIdCount = 10;
         copy.enabled           = self.enabled;
         copy.lastActivity      = self.lastActivity;
         copy.askingAttribution = self.askingAttribution;
-        // transactionIds not copied
+
+        // transactionIds not copied.
     }
     
     return copy;
+}
+
+#pragma mark - Private methods
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"ec:%d sc:%d ssc:%d ask:%d sl:%.1f ts:%.1f la:%.1f",
+            self.eventCount, self.sessionCount, self.subsessionCount, self.askingAttribution, self.sessionLength,
+            self.timeSpent, self.lastActivity];
+}
+
+#pragma mark - Public methods
+
+- (void)resetSessionAttributes:(double)now {
+    self.subsessionCount = 1;
+    self.sessionLength   = 0;
+    self.timeSpent       = 0;
+    self.lastActivity    = now;
+    self.lastInterval    = -1;
+}
+
+- (void)addTransactionId:(NSString *)transactionId {
+    if (self.transactionIds == nil) {   // Create array
+        self.transactionIds = [NSMutableArray arrayWithCapacity:kTransactionIdCount];
+    }
+
+    if (self.transactionIds.count == kTransactionIdCount) {
+        [self.transactionIds removeObjectAtIndex:0];    // Make space
+    }
+
+    [self.transactionIds addObject:transactionId];      // Add new ID
+}
+
+- (BOOL)findTransactionId:(NSString *)transactionId {
+    return [self.transactionIds containsObject:transactionId];
 }
 
 @end

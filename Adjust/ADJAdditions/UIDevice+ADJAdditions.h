@@ -1,23 +1,28 @@
 //
 //  UIDevice+ADJAdditions.h
-//  Adjust
+//  adjust GmbH
 //
-//  Created by Christian Wellenbrock on 23.07.12.
-//  Copyright (c) 2012-2014 adjust GmbH. All rights reserved.
+//  Created by Christian Wellenbrock on 23/07/12.
+//  Copyright (c) 2012-2015 adjust GmbH. All rights reserved.
 //
-#import <Foundation/Foundation.h>
+
 #import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
 #import "ADJActivityHandler.h"
 
 @interface UIDevice(ADJAdditions)
 
 - (BOOL)adjTrackingEnabled;
-- (NSString *)adjIdForAdvertisers;
-- (NSString *)adjFbAttributionId;
+
+- (NSString *)adjVendorId;
 - (NSString *)adjMacAddress;
 - (NSString *)adjDeviceType;
 - (NSString *)adjDeviceName;
 - (NSString *)adjCreateUuid;
-- (NSString *)adjVendorId;
+- (NSString *)adjFbAttributionId;
+- (NSString *)adjIdForAdvertisers;
+
 - (void)adjSetIad:(ADJActivityHandler *)activityHandler;
+
 @end

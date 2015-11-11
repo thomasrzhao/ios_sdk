@@ -1,16 +1,18 @@
 //
 //  ADJAttribution.m
-//  adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 29/10/14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
 
+#import "ADJUtil.h"
 #import "ADJAttribution.h"
 #import "NSString+ADJAdditions.h"
-#import "ADJUtil.h"
 
 @implementation ADJAttribution
+
+#pragma mark - Object lifecycle
 
 + (ADJAttribution *)dataWithJsonDict:(NSDictionary *)jsonDict {
     return [[ADJAttribution alloc] initWithJsonDict:jsonDict];
@@ -18,7 +20,10 @@
 
 - (id)initWithJsonDict:(NSDictionary *)jsonDict {
     self = [super init];
-    if (self == nil) return nil;
+
+    if (self == nil) {
+        return nil;
+    }
 
     if ([ADJUtil isNull:jsonDict]) {
         return nil;
@@ -35,118 +40,14 @@
     return self;
 }
 
-- (BOOL)isEqualToAttribution:(ADJAttribution *)attribution {
-    if (attribution == nil) {
-        return NO;
-    }
-    if (![NSString adjIsEqual:self.trackerToken toString:attribution.trackerToken]) {
-        return NO;
-    }
-    if (![NSString adjIsEqual:self.trackerName toString:attribution.trackerName]) {
-        return NO;
-    }
-    if (![NSString adjIsEqual:self.network toString:attribution.network]) {
-        return NO;
-    }
-    if (![NSString adjIsEqual:self.campaign toString:attribution.campaign]) {
-        return NO;
-    }
-    if (![NSString adjIsEqual:self.adgroup toString:attribution.adgroup]) {
-        return NO;
-    }
-    if (![NSString adjIsEqual:self.creative toString:attribution.creative]) {
-        return NO;
-    }
-    if (![NSString adjIsEqual:self.clickLabel toString:attribution.clickLabel]) {
-        return NO;
-    }
-
-    return YES;
-}
-
-- (NSDictionary *)dictionary {
-    NSMutableDictionary *responseDataDic = [NSMutableDictionary dictionary];
-
-    if (self.trackerToken != nil) {
-        [responseDataDic setObject:self.trackerToken forKey:@"trackerToken"];
-    }
-
-    if (self.trackerName != nil) {
-        [responseDataDic setObject:self.trackerName forKey:@"trackerName"];
-    }
-
-    if (self.network != nil) {
-        [responseDataDic setObject:self.network forKey:@"network"];
-    }
-
-    if (self.campaign != nil) {
-        [responseDataDic setObject:self.campaign forKey:@"campaign"];
-    }
-
-    if (self.adgroup != nil) {
-        [responseDataDic setObject:self.adgroup forKey:@"adgroup"];
-    }
-
-    if (self.creative != nil) {
-        [responseDataDic setObject:self.creative forKey:@"creative"];
-    }
-
-    if (self.clickLabel != nil) {
-        [responseDataDic setObject:self.clickLabel forKey:@"click_label"];
-    }
-
-    return responseDataDic;
-}
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"tt:%@ tn:%@ net:%@ cam:%@ adg:%@ cre:%@ cl:%@",
-            self.trackerToken, self.trackerName, self.network, self.campaign,
-            self.adgroup, self.creative, self.clickLabel];
-}
-
-
-#pragma mark - NSObject
-- (BOOL)isEqual:(id)object {
-    if (self == object) {
-        return YES;
-    }
-
-    if (![object isKindOfClass:[ADJAttribution class]]) {
-        return NO;
-    }
-
-    return [self isEqualToAttribution:(ADJAttribution *)object];
-}
-
-- (NSUInteger)hash {
-    return [self.trackerName hash];
-}
-
-#pragma mark - NSCopying
-
--(id)copyWithZone:(NSZone *)zone
-{
-    ADJAttribution* copy = [[[self class] allocWithZone:zone] init];
-
-    if (copy) {
-        copy.trackerToken = [self.trackerToken copyWithZone:zone];
-        copy.trackerName  = [self.trackerName copyWithZone:zone];
-        copy.network      = [self.network copyWithZone:zone];
-        copy.campaign     = [self.campaign copyWithZone:zone];
-        copy.adgroup      = [self.adgroup copyWithZone:zone];
-        copy.creative     = [self.creative copyWithZone:zone];
-        copy.clickLabel   = [self.clickLabel copyWithZone:zone];
-    }
-
-    return copy;
-}
-
-
-#pragma mark NSCoding
+#pragma mark - NSCoding
 
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super init];
-    if (self == nil) return nil;
+
+    if (self == nil) {
+        return nil;
+    }
 
     self.trackerToken = [decoder decodeObjectForKey:@"trackerToken"];
     self.trackerName  = [decoder decodeObjectForKey:@"trackerName"];
@@ -167,6 +68,122 @@
     [encoder encodeObject:self.adgroup      forKey:@"adgroup"];
     [encoder encodeObject:self.creative     forKey:@"creative"];
     [encoder encodeObject:self.clickLabel   forKey:@"click_label"];
+}
+
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone {
+    ADJAttribution *copy = [[[self class] allocWithZone:zone] init];
+
+    if (copy) {
+        copy.trackerToken = [self.trackerToken copyWithZone:zone];
+        copy.trackerName  = [self.trackerName copyWithZone:zone];
+        copy.network      = [self.network copyWithZone:zone];
+        copy.campaign     = [self.campaign copyWithZone:zone];
+        copy.adgroup      = [self.adgroup copyWithZone:zone];
+        copy.creative     = [self.creative copyWithZone:zone];
+        copy.clickLabel   = [self.clickLabel copyWithZone:zone];
+    }
+
+    return copy;
+}
+
+#pragma mark - NSObject
+
+- (BOOL)isEqual:(id)object {
+    if (self == object) {
+        return YES;
+    }
+
+    if (![object isKindOfClass:[ADJAttribution class]]) {
+        return NO;
+    }
+
+    return [self isEqualToAttribution:(ADJAttribution *)object];
+}
+
+#pragma mark - Private methods
+
+- (NSUInteger)hash {
+    return [self.trackerName hash];
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"tt:%@ tn:%@ net:%@ cam:%@ adg:%@ cre:%@ cl:%@",
+            self.trackerToken, self.trackerName, self.network, self.campaign,
+            self.adgroup, self.creative, self.clickLabel];
+}
+
+#pragma mark - Public methods
+
+- (BOOL)isEqualToAttribution:(ADJAttribution *)attribution {
+    if (attribution == nil) {
+        return NO;
+    }
+
+    if (![NSString adjIsEqual:self.trackerToken toString:attribution.trackerToken]) {
+        return NO;
+    }
+
+    if (![NSString adjIsEqual:self.trackerName toString:attribution.trackerName]) {
+        return NO;
+    }
+
+    if (![NSString adjIsEqual:self.network toString:attribution.network]) {
+        return NO;
+    }
+
+    if (![NSString adjIsEqual:self.campaign toString:attribution.campaign]) {
+        return NO;
+    }
+
+    if (![NSString adjIsEqual:self.adgroup toString:attribution.adgroup]) {
+        return NO;
+    }
+
+    if (![NSString adjIsEqual:self.creative toString:attribution.creative]) {
+        return NO;
+    }
+
+    if (![NSString adjIsEqual:self.clickLabel toString:attribution.clickLabel]) {
+        return NO;
+    }
+
+    return YES;
+}
+
+- (NSDictionary *)dictionary {
+    NSMutableDictionary *responseData = [NSMutableDictionary dictionary];
+
+    if (self.trackerToken != nil) {
+        [responseData setObject:self.trackerToken forKey:@"trackerToken"];
+    }
+
+    if (self.trackerName != nil) {
+        [responseData setObject:self.trackerName forKey:@"trackerName"];
+    }
+
+    if (self.network != nil) {
+        [responseData setObject:self.network forKey:@"network"];
+    }
+
+    if (self.campaign != nil) {
+        [responseData setObject:self.campaign forKey:@"campaign"];
+    }
+
+    if (self.adgroup != nil) {
+        [responseData setObject:self.adgroup forKey:@"adgroup"];
+    }
+
+    if (self.creative != nil) {
+        [responseData setObject:self.creative forKey:@"creative"];
+    }
+
+    if (self.clickLabel != nil) {
+        [responseData setObject:self.clickLabel forKey:@"click_label"];
+    }
+    
+    return responseData;
 }
 
 @end

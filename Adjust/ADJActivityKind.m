@@ -1,9 +1,9 @@
 //
 //  ADJActivityKind.m
-//  Adjust
+//  adjust GmbH
 //
-//  Created by Christian Wellenbrock on 11.02.14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Created by Christian Wellenbrock on 11/02/14.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
 
 #import "ADJActivityKind.h"
@@ -24,7 +24,7 @@
     }
 }
 
-+ (NSString*)activityKindToString:(ADJActivityKind)activityKind {
++ (NSString *)activityKindToString:(ADJActivityKind)activityKind {
     switch (activityKind) {
         case ADJActivityKindSession:       return @"session";
         case ADJActivityKindEvent:         return @"event";
