@@ -110,15 +110,14 @@ extern NSString * const ADJEnvironmentProduction;
 + (id)getInstance;
 
 - (BOOL)isEnabled;
+- (void)trackSubsessionEnd;
+- (void)trackSubsessionStart;
 - (void)setEnabled:(BOOL)enabled;
 - (void)appWillOpenUrl:(NSURL *)url;
 - (void)setOfflineMode:(BOOL)enabled;
 - (void)trackEvent:(ADJEvent *)event;
 - (void)setDeviceToken:(NSData *)deviceToken;
 - (void)appDidLaunch:(ADJConfig *)adjustConfig;
-
-- (void)trackSubsessionEnd;
-- (void)trackSubsessionStart;
 
 @end
 

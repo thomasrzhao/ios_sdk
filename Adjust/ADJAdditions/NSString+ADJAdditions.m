@@ -48,7 +48,7 @@
     return output;
 }
 
--(NSString *)adjUrlEncode {
+- (NSString *)adjUrlEncode {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
@@ -70,6 +70,7 @@
 + (NSString *)adjJoin:(NSString *)first, ... {
     NSString *iter, *result = first;
     va_list strings;
+
     va_start(strings, first);
 
     while ((iter = va_arg(strings, NSString *))) {

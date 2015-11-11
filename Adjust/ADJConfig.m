@@ -112,17 +112,14 @@ static const NSUInteger kAppTokenLenght = 12;
 
     if ([ADJUtil isNull:environment]) {
         [logger error:@"Missing environment"];
-
         return NO;
     }
 
     if ([environment isEqualToString:ADJEnvironmentSandbox]) {
         [logger assert:@"SANDBOX: Adjust is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing"];
-
         return YES;
     } else if ([environment isEqualToString:ADJEnvironmentProduction]) {
         [logger assert:@"PRODUCTION: Adjust is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!"];
-
         return YES;
     }
 
@@ -134,13 +131,11 @@ static const NSUInteger kAppTokenLenght = 12;
 - (BOOL)checkAppToken:(NSString *)appToken {
     if ([ADJUtil isNull:appToken]) {
         [[ADJAdjustFactory logger] error:@"Missing App Token"];
-
         return NO;
     }
 
     if (appToken.length != kAppTokenLenght) {
         [[ADJAdjustFactory logger] error:@"Malformed App Token '%@'", appToken];
-
         return NO;
     }
 
