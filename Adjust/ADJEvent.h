@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface ADJEvent : NSObject<NSCopying>
+@interface ADJEvent : NSObject <NSCopying>
 
 /**
  *  @property   emptyReceipt

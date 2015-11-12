@@ -1,9 +1,9 @@
 //
 //  ADJLoggerMock.h
-//  Adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 10/02/14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -13,8 +13,9 @@ static const int ADJLogLevelTest = 7;
 static const int ADJLogLevelCheck = 8;
 
 @interface ADJLoggerMock : NSObject <ADJLogger>
+
+- (void)reset;
 - (void)test:(NSString *)message, ...;
 - (BOOL)deleteUntil:(NSInteger)logLevel beginsWith:(NSString *)beginsWith;
-- (void)reset;
 
 @end

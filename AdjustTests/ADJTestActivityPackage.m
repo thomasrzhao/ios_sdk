@@ -1,40 +1,40 @@
 //
 //  ADJTestActivityPackage.m
-//  adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 15/05/15.
 //  Copyright (c) 2015 adjust GmbH. All rights reserved.
 //
 
-#import "ADJTestActivityPackage.h"
-#import "ADJActivityKind.h"
 #import "ADJUtil.h"
+#import "ADJActivityKind.h"
+#import "ADJTestActivityPackage.h"
 
-// assert package string equals
+// Assert package string equals
 #define apsEquals(field, value) \
     aslEquals(field, value, package.extendedString)
 
-// assert package integer equals
+// Assert package integer equals
 #define apiEquals(field, value) \
     ailEquals(field, value, package.extendedString)
 
-// assert package equals
+// Assert package equals
 #define apEquals(field, value) \
     alEquals(field, value, package.extendedString)
 
-// assert package string parameter equals
+// Assert package string parameter equals
 #define apspEquals(parameterName, value) \
     apsEquals((NSString *)package.parameters[parameterName], value)
 
-// assert package integer parameter equals
+// Assert package integer parameter equals
 #define apipEquals(parameterName, value) \
     apspEquals(parameterName, [NSString stringWithFormat:@"%d",value])
 
-// assert package parameter not nil
+// Assert package parameter not nil
 #define appnNil(parameterName) \
     anlNil((NSString *)package.parameters[parameterName], package.extendedString)
 
-// assert package paramenter nil
+// Assert package paramenter nil
 #define appNil(parameterName) \
     alNil((NSString *)package.parameters[parameterName], package.extendedString)
 
@@ -44,13 +44,11 @@
 
 @implementation ADJTestActivityPackage
 
-- (void)setUp
-{
+- (void)setUp {
     [super setUp];
 }
 
-- (void)tearDown
-{
+- (void)tearDown {
     [super tearDown];
 }
 
@@ -59,23 +57,22 @@
 
 - (void)testPackageSession:(ADJActivityPackage *)package
                     fields:(ADJPackageFields *)fields
-              sessionCount:(NSString*)sessionCount
-{
-    // set the session count
+              sessionCount:(NSString *)sessionCount {
+    // Set the session count.
     fields.sessionCount = sessionCount;
 
-    // test default package attributes
+    // Test default package attributes.
     [self testDefaultAttributes:package
                          fields:fields
                            path:@"/session"
                    activityKind:ADJActivityKindSession
              activityKindString:@"session"];
 
-    // check default parameters
+    // Check default parameters.
     [self testDefaultParameters:package
                          fields:fields];
 
-    // session parameters
+    // Session parameters
 
     // last_interval
     if ([@"1" isEqualToString:fields.sessionCount]) {
@@ -83,70 +80,74 @@
     } else {
         appnNil(@"last_interval");
     }
+
     // default_tracker
     apspEquals(@"default_tracker", fields.defaultTracker);
 }
 
 - (void)testEventSession:(ADJActivityPackage *)package
                   fields:(ADJPackageFields *)fields
-              eventToken:(NSString*)eventToken
-{
-    // test default package attributes
+              eventToken:(NSString *)eventToken {
+    // Test default package attributes.
     [self testDefaultAttributes:package
                          fields:fields
                            path:@"/event"
                    activityKind:ADJActivityKindEvent
              activityKindString:@"event"];
 
-    // check default parameters
+    // Check default parameters.
     [self testDefaultParameters:package
                          fields:fields];
 
-    // event parameters
+    // Event parameters
+
     // event_count
     if (fields.eventCount == nil) {
         appnNil(@"event_count");
     } else {
         apspEquals(@"event_count", fields.eventCount);
     }
+
     // event_token
     apspEquals(@"event_token", eventToken);
-    // revenue and currency must come together
-    if (package.parameters[@"revenue"] != nil
-        && package.parameters[@"currency"] == nil)
-    {
+
+    // Revenue and currency must come together.
+    if (package.parameters[@"revenue"] != nil && package.parameters[@"currency"] == nil) {
         XCTFail(@"%@",package.extendedString);
     }
-    if (package.parameters[@"revenue"] == nil
-        && package.parameters[@"currency"] != nil)
-    {
+
+    if (package.parameters[@"revenue"] == nil && package.parameters[@"currency"] != nil) {
         XCTFail(@"%@",package.extendedString);
     }
+
     // revenue
     apspEquals(@"revenue", fields.revenue);
+
     // currency
     apspEquals(@"currency", fields.currency);
+
     // callback_params
     [self assertJsonParameters:package parameterName:@"callback_params" value:fields.callbackParameters];
+
     // partner_params
     [self assertJsonParameters:package parameterName:@"partner_params" value:fields.partnerParameters];
 }
 
 - (void)testClickPackage:(ADJActivityPackage *)package
                   fields:(ADJPackageFields *)fields
-                  source:(NSString*)source
-{
-    // test default package attributes
+                  source:(NSString *)source {
+    // Test default package attributes.
     [self testDefaultAttributes:package
                          fields:fields
                            path:@"/sdk_click"
                    activityKind:ADJActivityKindClick
              activityKindString:@"click"];
 
-    // check ids parameters
+    // Check ids parameters.
     [self testIdsParameters:package fields:fields];
 
-    // click parameters
+    // Click parameters
+
     // source
     apspEquals(@"source", source);
 
@@ -154,7 +155,7 @@
     [self assertJsonParameters:package parameterName:@"params" value:fields.deepLinkParameters];
 
     // click_time
-    // TODO test click time
+    // TODO: Test click_time
     if (fields.iadTime == nil) {
         appnNil(@"click_time");
     } else {
@@ -168,125 +169,150 @@
     if (fields.attribution == nil) {
         // tracker
         appNil(@"tracker");
+
         // campaign
         appNil(@"campaign");
+
         // adgroup
         appNil(@"adgroup");
+
         // creative
         appNil(@"creative");
     } else {
         // tracker
         apspEquals(@"tracker", fields.attribution.trackerName);
+
         // campaign
         apspEquals(@"campaign", fields.attribution.campaign);
+
         // adgroup
         apspEquals(@"adgroup", fields.attribution.adgroup);
+
         // creative
         apspEquals(@"creative", fields.attribution.creative);
     }
-
 }
 
 - (void)testAttributionPackage:(ADJActivityPackage *)package
-                  fields:(ADJPackageFields *)fields
-{
-    // test default package attributes
+                  fields:(ADJPackageFields *)fields {
+    // Test default package attributes.
     [self testDefaultAttributes:package
                          fields:fields
                            path:@"/attribution"
                    activityKind:ADJActivityKindAttribution
              activityKindString:@"attribution"];
 
-    // check ids parameters
+    // Check ids parameters
     [self testIdsParameters:package fields:fields];
 }
+
 - (void)testDefaultAttributes:(ADJActivityPackage *)package
                        fields:(ADJPackageFields *)fields
                          path:(NSString *)path
                  activityKind:(ADJActivityKind)activityKind
-           activityKindString:(NSString *)activityKindString
-{
-    // check the Sdk version is being tested
+           activityKindString:(NSString *)activityKindString {
+    // Check the Sdk version is being tested.
     apsEquals(package.clientSdk, fields.clientSdk);
-    // check the path
+
+    // Check the path.
     apsEquals(package.path, path);
-    // test activity kind
-    // check the activity kind
+
+    // Test activity kind.
+
+    // Check the activity kind.
     apiEquals(package.activityKind, activityKind);
-    // the conversion from activity kind to String
+
+    // The conversion from activity kind to String.
     apsEquals([ADJActivityKindUtil activityKindToString:package.activityKind], activityKindString);
-    // the conversion from String to activity kind
+
+    // The conversion from String to activity kind.
     apiEquals(package.activityKind, [ADJActivityKindUtil activityKindFromString:activityKindString]);
-    // test suffix
+
+    // Test suffix.
     apsEquals(package.suffix, fields.suffix);
 }
+
 - (void)testIdsParameters:(ADJActivityPackage *)package
-                       fields:(ADJPackageFields *)fields
-{
+                   fields:(ADJPackageFields *)fields {
     [self testDeviceInfoIds:package fields:fields];
     [self testConfig:package fields:fields];
+
     // created_at
     appnNil(@"created_at");
 
 }
+
 - (void)testDefaultParameters:(ADJActivityPackage *)package
-                       fields:(ADJPackageFields *)fields
-{
+                       fields:(ADJPackageFields *)fields {
     [self testDeviceInfo:package fields:fields];
     [self testConfig:package fields:fields];
     [self testActivityState:package fields:fields];
+
     // created_at
     appnNil(@"created_at");
 }
 
 - (void)testDeviceInfoIds:(ADJActivityPackage *)package
-                   fields:(ADJPackageFields *)fields
-{
+                   fields:(ADJPackageFields *)fields {
     // mac_sha1
     appnNil(@"mac_sha1");
+
     // idfa
     appnNil(@"idfa");
+
     // idfv
     appnNil(@"idfv");
+
     // mac_md5
-    // can't test in simulator
+    // Can't test in simulator.
 }
 
 - (void)testDeviceInfo:(ADJActivityPackage *)package
-                       fields:(ADJPackageFields *)fields
-{
+                fields:(ADJPackageFields *)fields {
     [self testDeviceInfoIds:package fields:fields];
+
     // fb_id
-    //appnNil(@"fb_id");
+    // appnNil(@"fb_id");
+
     // tracking_enabled
     appnNil(@"tracking_enabled");
+
     // push_token
     apspEquals(@"push_token", fields.pushToken);
+
     // bundle_id
-    //appnNil(@"bundle_id");
+    // appnNil(@"bundle_id");
+
     // app_version
-    //appnNil(@"app_version");
+    // appnNil(@"app_version");
+
     // device_type
     appnNil(@"device_type");
+
     // device_name
     appnNil(@"device_name");
+
     // os_name
     appnNil(@"os_name");
+
     // os_version
     appnNil(@"os_version");
+
     // language
     appnNil(@"language");
+
     // country
     appnNil(@"country");
 }
 
 - (void)testConfig:(ADJActivityPackage *)package
-                fields:(ADJPackageFields *)fields
-{
+            fields:(ADJPackageFields *)fields {
     // app_token
     apspEquals(@"app_token", fields.appToken);
+
     // environment
     apspEquals(@"environment", fields.environment);
+
     // needs_attribution_data
     if (fields.hasDelegate == nil) {
         appnNil(@"needs_attribution_data");
@@ -295,22 +321,23 @@
     }
 }
 
-
 - (void)testActivityState:(ADJActivityPackage *)package
-                   fields:(ADJPackageFields *)fields
-{
+                   fields:(ADJPackageFields *)fields {
     // session_count
     if (fields.sessionCount == nil) {
         appnNil(@"session_count");
     } else {
         apspEquals(@"session_count", fields.sessionCount);
     }
+
     // first session
     if ([@"1" isEqualToString:fields.sessionCount]) {
         // subsession_count
         appNil(@"subsession_count");
+
         // session_length
         appNil(@"session_length");
+
         // time_spent
         appNil(@"time_spent");
     } else {
@@ -320,41 +347,43 @@
         } else {
             apspEquals(@"subsession_count", fields.subSessionCount);
         }
+
         // session_length
         appnNil(@"session_length");
+
         // time_spent
         appnNil(@"time_spent");
     }
+
     // ios_uuid
     appnNil(@"ios_uuid");
 }
 
 - (BOOL)assertJsonParameters:(ADJActivityPackage *)package
                parameterName:(NSString *)parameterName
-                       value:(NSString *)value
-{
-    NSString * parameterValue = (NSString *)package.parameters[parameterName];
+                       value:(NSString *)value {
+    NSString *parameterValue = (NSString *)package.parameters[parameterName];
 
     if (parameterValue == nil) {
         return value == nil;
     }
 
-    // value not nil
+    // Value not nil
     anlNil(value, package.extendedString);
 
-    NSData * parameterData = [parameterValue dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary * parameterDictionary = [ADJUtil buildJsonDict:parameterData];
+    NSData *parameterData = [parameterValue dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *parameterDictionary = [ADJUtil buildJsonDict:parameterData];
 
-    // check parameter parses from Json string
+    // Check parameter parses from Json string.
     anlNil(parameterDictionary, package.extendedString);
 
-    NSData * valueData = [value dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary * valueDictionary = [ADJUtil buildJsonDict:valueData];
+    NSData *valueData = [value dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *valueDictionary = [ADJUtil buildJsonDict:valueData];
 
-    // check value parses from Json string
+    // Check value parses from Json string.
     anlNil(valueDictionary, package.extendedString);
 
-    // check if the json is equal
+    // Check if the json is equal.
     alTrue([valueDictionary isEqualToDictionary:parameterDictionary], package.extendedString);
 }
 

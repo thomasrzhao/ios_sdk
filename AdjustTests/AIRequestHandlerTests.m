@@ -1,44 +1,37 @@
 //
 //  ADJRequestHandlerTests.m
-//  Adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 07/02/14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
-#import "ADJAdjustFactory.h"
+
+#import "ADJTestsUtil.h"
 #import "ADJLoggerMock.h"
-#import "NSURLConnection+NSURLConnectionSynchronousLoadingMocking.h"
+#import "ADJAdjustFactory.h"
 #import "ADJPackageHandlerMock.h"
 #import "ADJRequestHandlerMock.h"
-#import "ADJTestsUtil.h"
 #import "ADJTestActivityPackage.h"
+#import "NSURLConnection+NSURLConnectionSynchronousLoadingMocking.h"
 
 @interface ADJRequestHandlerTests : ADJTestActivityPackage
 
-@property (atomic,strong) ADJPackageHandlerMock *packageHandlerMock;
-@property (atomic,strong) id<ADJRequestHandler> requestHandler;
-
+@property (atomic, strong) id<ADJRequestHandler> requestHandler;
+@property (atomic, strong) ADJPackageHandlerMock *packageHandlerMock;
 
 @end
 
 @implementation ADJRequestHandlerTests
 
-- (void)setUp
-{
+- (void)setUp {
     [super setUp];
-    // Put setup code here; it will be run once, before the first test case.
-
     [self reset];
-
 }
 
-- (void)tearDown
-{
+- (void)tearDown {
     [ADJAdjustFactory setLogger:nil];
-
-    // Put teardown code here; it will be run once, after the last test case.
     [super tearDown];
 }
 
@@ -52,8 +45,7 @@
     self.requestHandler =[ADJAdjustFactory requestHandlerForPackageHandler:self.packageHandlerMock];
 }
 
-- (void)testSend
-{
+- (void)testSend {
     // null response
     [NSURLConnection setResponseType:ADJResponseTypeNil];
 
@@ -61,7 +53,7 @@
 
     aTest(@"PackageHandler closeFirstPackage");
 
-    // client exception
+    // Client exception
     [NSURLConnection setResponseType:ADJResponseTypeConnError];
 
     [self checkSendPackage];
@@ -70,7 +62,7 @@
 
     aTest(@"PackageHandler closeFirstPackage");
 
-    // server error
+    // Server error
     [NSURLConnection setResponseType:ADJResponseTypeServerError];
 
     [self checkSendPackage];
@@ -83,7 +75,7 @@
 
     aTest(@"PackageHandler sendNextPackage");
 
-    // wrong json
+    // Wrong json
     [NSURLConnection setResponseType:ADJResponseTypeWrongJson];
 
     [self checkSendPackage];
@@ -94,7 +86,7 @@
 
     aTest(@"PackageHandler closeFirstPackage");
 
-    // empty json
+    // Empty json
     [NSURLConnection setResponseType:ADJResponseTypeEmptyJson];
 
     [self checkSendPackage];
@@ -107,7 +99,7 @@
 
     aTest(@"PackageHandler sendNextPackage");
 
-    // message response
+    // Message response
     [NSURLConnection setResponseType:ADJResponseTypeMessage];
 
     [self checkSendPackage];
@@ -121,8 +113,7 @@
     aTest(@"PackageHandler sendNextPackage");
 }
 
-- (void)checkSendPackage
-{
+- (void)checkSendPackage {
     [self.requestHandler sendPackage:[ADJTestsUtil getUnknowPackage:@""]];
 
     [NSThread sleepForTimeInterval:1.0];

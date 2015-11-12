@@ -1,26 +1,28 @@
 //
 //  NSURLConnection+NSURLConnectionSynchronousLoadingMocking.m
-//  Adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 12/02/14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
-#import "NSURLConnection+NSURLConnectionSynchronousLoadingMocking.h"
-#import "ADJAdjustFactory.h"
-#import "ADJLoggerMock.h"
 
-static ADJResponseType responseTypeInternal;
+#import "ADJLoggerMock.h"
+#import "ADJAdjustFactory.h"
+#import "NSURLConnection+NSURLConnectionSynchronousLoadingMocking.h"
+
 static NSURLRequest * lastRequest = nil;
+static ADJResponseType responseTypeInternal;
 
 @implementation NSURLConnection(NSURLConnectionSynchronousLoadingMock)
 
 + (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error {
-    ADJLoggerMock *loggerMock =(ADJLoggerMock *)ADJAdjustFactory.logger;
+    ADJLoggerMock *loggerMock =(ADJLoggerMock *)[ADJAdjustFactory logger];
     [loggerMock test:@"NSURLConnection sendSynchronousRequest"];
 
     lastRequest = request;
+
+    NSString *sResponse;
     NSInteger statusCode = 200;
-    NSString * sResponse;
 
     if (responseTypeInternal == ADJResponseTypeNil) {
         return nil;
@@ -40,16 +42,16 @@ static NSURLRequest * lastRequest = nil;
     } else if (responseTypeInternal == ADJResponseTypeMessage) {
         sResponse = @"{ \"message\" : \"response OK\"}";
     }
-    //  build response
-    (*response) = [[NSHTTPURLResponse alloc] initWithURL:[[NSURL alloc] init] statusCode:statusCode HTTPVersion:@"" headerFields:nil];
 
+    // Build response.
+    (*response) = [[NSHTTPURLResponse alloc] initWithURL:[[NSURL alloc] init] statusCode:statusCode HTTPVersion:@"" headerFields:nil];
     NSData *responseData = [sResponse dataUsingEncoding:NSUTF8StringEncoding];
 
     return responseData;
 
     /*
     NSInteger statusCode;
-    NSString * sResponse;
+    NSString *sResponse;
     if (triggerResponse == 0) {
         statusCode = 200;
         sResponse = @"{\"attribution\":{\"tracker_token\":\"trackerTokenValue\",\"tracker_name\":\"trackerNameValue\",\"network\":\"networkValue\",\"campaign\":\"campaignValue\",\"adgroup\":\"adgroupValue\",\"creative\":\"creativeValue\",\"click_label\":\"clickLabelValue\"},\"message\":\"response OK\",\"deeplink\":\"testApp://\"}";
@@ -66,13 +68,12 @@ static NSURLRequest * lastRequest = nil;
         statusCode = 200;
         sResponse = @"{\"attribution\":{\"tracker_token\":\"trackerTokenValue\",\"tracker_name\":\"trackerNameValue\",\"network\":\"networkValue\",\"campaign\":\"campaignValue\",\"adgroup\":\"adgroupValue\",\"creative\":\"creativeValue\",\"click_label\":\"clickLabelValue\"}, \"message\":\"response OK\",\"ask_in\":\"2000\"}";
     } else {
-
         statusCode = 0;
         sResponse = @"";
     }
-    //  build response
-    (*response) = [[NSHTTPURLResponse alloc] initWithURL:[[NSURL alloc] init] statusCode:statusCode HTTPVersion:@"" headerFields:nil];
 
+    // Build response
+    (*response) = [[NSHTTPURLResponse alloc] initWithURL:[[NSURL alloc] init] statusCode:statusCode HTTPVersion:@"" headerFields:nil];
     NSData *responseData = [sResponse dataUsingEncoding:NSUTF8StringEncoding];
 
     return responseData;
@@ -83,8 +84,7 @@ static NSURLRequest * lastRequest = nil;
     responseTypeInternal = responseType;
 }
 
-+ (NSURLRequest *)getLastRequest
-{
++ (NSURLRequest *)getLastRequest {
     return lastRequest;
 }
 

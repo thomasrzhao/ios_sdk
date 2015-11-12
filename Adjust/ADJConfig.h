@@ -29,7 +29,7 @@
 /**
  *  Adjust configuration object.
  */
-@interface ADJConfig : NSObject<NSCopying>
+@interface ADJConfig : NSObject <NSCopying>
 
 /** 
  *  @property   sdkPrefix

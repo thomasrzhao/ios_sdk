@@ -1,32 +1,35 @@
 //
 //  ADJRequestHandlerMock.m
-//  Adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 10/02/14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
 
-#import "ADJRequestHandlerMock.h"
 #import "ADJLoggerMock.h"
 #import "ADJAdjustFactory.h"
+#import "ADJRequestHandlerMock.h"
 
 static NSString * const prefix = @"RequestHandler ";
 
 @interface ADJRequestHandlerMock()
 
-@property (nonatomic, assign) id<ADJPackageHandler> packageHandler;
 @property (nonatomic, assign) ADJLoggerMock *loggerMock;
+@property (nonatomic, assign) id<ADJPackageHandler> packageHandler;
 
 @end
 
 @implementation ADJRequestHandlerMock
 
-- (id)initWithPackageHandler:(id<ADJPackageHandler>) packageHandler {
+- (id)initWithPackageHandler:(id<ADJPackageHandler>)packageHandler {
     self = [super init];
-    if (self == nil) return nil;
+
+    if (self == nil) {
+        return nil;
+    }
 
     self.packageHandler = packageHandler;
-    self.loggerMock = (ADJLoggerMock *) [ADJAdjustFactory logger];
+    self.loggerMock = (ADJLoggerMock *)[ADJAdjustFactory logger];
 
     [self.loggerMock test:[prefix stringByAppendingString:@"initWithPackageHandler"]];
 

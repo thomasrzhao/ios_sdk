@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface ADJDeviceInfo : NSObject<NSCopying>
+@interface ADJDeviceInfo : NSObject <NSCopying>
 
 @property (nonatomic, assign) BOOL trackingEnabled;
 @property (nonatomic, copy) NSString *macSha1;

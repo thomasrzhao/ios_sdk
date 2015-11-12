@@ -1,21 +1,21 @@
 //
 //  ADJActivityHandlerMock.m
-//  Adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 11/02/14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
 
-#import "ADJActivityHandlerMock.h"
 #import "ADJLoggerMock.h"
 #import "ADJAdjustFactory.h"
+#import "ADJActivityHandlerMock.h"
 
 static NSString * const prefix = @"ActivityHandler ";
 
 @interface ADJActivityHandlerMock()
 
-@property (nonatomic, strong) ADJLoggerMock *loggerMock;
 @property (nonatomic, assign) BOOL updated;
+@property (nonatomic, strong) ADJLoggerMock *loggerMock;
 
 @end
 
@@ -23,9 +23,12 @@ static NSString * const prefix = @"ActivityHandler ";
 
 - (id)initWithConfig:(ADJConfig *)adjustConfig {
     self = [super init];
-    if (self == nil) return nil;
 
-    self.loggerMock = (ADJLoggerMock *) [ADJAdjustFactory logger];
+    if (self == nil) {
+        return nil;
+    }
+
+    self.loggerMock = (ADJLoggerMock *)[ADJAdjustFactory logger];
     self.updated = NO;
 
     [self.loggerMock test:[prefix stringByAppendingFormat:@"initWithConfig"]];
@@ -42,7 +45,6 @@ static NSString * const prefix = @"ActivityHandler ";
 
 - (void)trackEvent:(ADJEvent *)event {
     [self.loggerMock test:[prefix stringByAppendingFormat:@"trackEvent"]];
-
 }
 
 - (void)finishedTracking:(NSDictionary *)jsonDict {
@@ -66,38 +68,38 @@ static NSString * const prefix = @"ActivityHandler ";
     [self.loggerMock test:[prefix stringByAppendingFormat:@"savePushToken"]];
 }
 
-- (ADJAttribution*) attribution {
+- (ADJAttribution *)attribution {
     [self.loggerMock test:[prefix stringByAppendingFormat:@"attribution"]];
     return (ADJAttribution *)[NSNull null];
 }
 
-- (void) setAttribution:(ADJAttribution*)attribution {
+- (void)setAttribution:(ADJAttribution *)attribution {
     [self.loggerMock test:[prefix stringByAppendingFormat:@"setAttribution"]];
 }
 
-- (void) setAskingAttribution:(BOOL)askingAttribution {
+- (void)setAskingAttribution:(BOOL)askingAttribution {
     [self.loggerMock test:[prefix stringByAppendingFormat:@"setAskingAttribution, %d", askingAttribution]];
 }
 
-- (BOOL) updateAttribution:(ADJAttribution*) attribution {
+- (BOOL)updateAttribution:(ADJAttribution *) attribution {
     [self.loggerMock test:[prefix stringByAppendingFormat:@"updateAttribution, %@", attribution]];
     self.attributionUpdated = attribution;
     return self.updated;
 }
 
-- (void) setIadDate:(NSDate*)iAdImpressionDate withPurchaseDate:(NSDate*)appPurchaseDate {
+- (void)setIadDate:(NSDate *)iAdImpressionDate withPurchaseDate:(NSDate *)appPurchaseDate {
     [self.loggerMock test:[prefix stringByAppendingFormat:@"setIadDate"]];
 }
 
-- (void) launchAttributionDelegate {
+- (void)launchAttributionDelegate {
     [self.loggerMock test:[prefix stringByAppendingFormat:@"launchAttributionDelegate"]];
 }
 
-- (void) setOfflineMode:(BOOL)enabled {
+- (void)setOfflineMode:(BOOL)enabled {
     [self.loggerMock test:[prefix stringByAppendingFormat:@"setOfflineMode"]];
 }
 
-- (void) setUpdatedAttribution:(BOOL)updated {
+- (void)setUpdatedAttribution:(BOOL)updated {
     self.updated = updated;
 }
 

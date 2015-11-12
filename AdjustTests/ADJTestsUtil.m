@@ -1,19 +1,20 @@
 //
 //  ADJTestsUtil.m
-//  Adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 12/02/14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
 
 #import <XCTest/XCTestAssertionsImpl.h>
+
 #import "ADJTestsUtil.h"
-#import "ADJPackageBuilder.h"
 #import "ADJAdjustFactory.h"
+#import "ADJPackageBuilder.h"
 
 @interface ADJTestsUtil()
 
-@property (nonatomic, strong) ADJLoggerMock* loggerMock;
+@property (nonatomic, strong) ADJLoggerMock *loggerMock;
 
 @end
 
@@ -21,7 +22,10 @@
 
 - (id)initWithLoggerMock:(ADJLoggerMock *)loggerMock {
     self = [super init];
-    if (self == nil) return nil;
+
+    if (self == nil) {
+        return nil;
+    }
 
     self.loggerMock = loggerMock;
 
@@ -29,21 +33,24 @@
 }
 
 + (NSString *)getFilename:(NSString *)filename {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *path = [paths objectAtIndex:0];
-    NSString *filepath = [path stringByAppendingPathComponent:filename];
+    NSArray *paths      = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *path      = [paths objectAtIndex:0];
+    NSString *filepath  = [path stringByAppendingPathComponent:filename];
+
     return filepath;
 }
 
 + (BOOL)deleteFile:(NSString *)filename logger:(ADJLoggerMock *)loggerMock {
-    NSString *filepath = [ADJTestsUtil getFilename:filename];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error = nil;
-    BOOL exists = [fileManager fileExistsAtPath:filepath];
+    NSString *filepath          = [ADJTestsUtil getFilename:filename];
+    NSFileManager *fileManager  = [NSFileManager defaultManager];
+    NSError *error              = nil;
+    BOOL exists                 = [fileManager fileExistsAtPath:filepath];
+
     if (!exists) {
         [loggerMock test:@"file %@ does not exist at path %@", filename, filepath];
         return  YES;
     }
+
     BOOL deleted = [fileManager removeItemAtPath:filepath error:&error];
 
     if (!deleted) {
@@ -57,18 +64,18 @@
     return deleted;
 }
 
-+ (ADJActivityPackage *)getUnknowPackage:(NSString*)suffix
-{
++ (ADJActivityPackage *)getUnknowPackage:(NSString *)suffix {
     ADJActivityPackage *activityPackage = [[ADJActivityPackage alloc] init];
     activityPackage.suffix = suffix;
+
     return activityPackage;
 }
 
-+ (ADJActivityPackage *)getClickPackage:(NSString*)suffix
-{
++ (ADJActivityPackage *)getClickPackage:(NSString *)suffix {
     ADJActivityPackage *activityPackage = [[ADJActivityPackage alloc] init];
     activityPackage.activityKind = ADJActivityKindClick;
     activityPackage.suffix = suffix;
+    
     return activityPackage;
 }
 

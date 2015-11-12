@@ -1,9 +1,9 @@
 //
 //  NSURLConnection+NSURLConnectionSynchronousLoadingMocking.h
-//  Adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 12/02/14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -19,10 +19,10 @@ typedef enum {
 
 @interface NSURLConnection(NSURLConnectionSynchronousLoadingMock)
 
-+ (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error;
-
-+ (void)setResponseType:(ADJResponseType)responseType;
-+ (NSURLRequest *)getLastRequest;
 + (void)reset;
++ (void)setResponseType:(ADJResponseType)responseType;
+
++ (NSURLRequest *)getLastRequest;
++ (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error;
 
 @end

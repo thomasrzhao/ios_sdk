@@ -1,23 +1,23 @@
 //
 //  ADJPackageHandlerMock.m
-//  Adjust
+//  adjust GmbH
 //
 //  Created by Pedro Filipe on 10/02/14.
-//  Copyright (c) 2014 adjust GmbH. All rights reserved.
+//  Copyright (c) 2014-2015 adjust GmbH. All rights reserved.
 //
 
-#import "ADJPackageHandlerMock.h"
 #import "ADJLoggerMock.h"
 #import "ADJAdjustFactory.h"
 #import "ADJActivityHandler.h"
+#import "ADJPackageHandlerMock.h"
 
 static NSString * const prefix = @"PackageHandler ";
 
 @interface ADJPackageHandlerMock()
 
+@property (nonatomic, assign) BOOL startPaused;
 @property (nonatomic, strong) ADJLoggerMock *loggerMock;
 @property (nonatomic, assign) id<ADJActivityHandler> activityHandler;
-@property (nonatomic, assign) BOOL startPaused;
 
 @end
 
@@ -29,17 +29,19 @@ static NSString * const prefix = @"PackageHandler ";
     return [self initWithActivityHandler:nil startPaused:NO];
 #pragma clang diagnostic pop
 }
+
 - (id)initWithActivityHandler:(id<ADJActivityHandler>)activityHandler
-                  startPaused:(BOOL)startPaused
-{
+                  startPaused:(BOOL)startPaused {
     self = [super init];
-    if (self == nil) return nil;
 
-    self.startPaused = startPaused;
-    self.activityHandler = activityHandler;
+    if (self == nil) {
+        return nil;
+    }
 
-    self.loggerMock = (ADJLoggerMock *) ADJAdjustFactory.logger;
-    self.packageQueue = [NSMutableArray array];
+    self.startPaused        = startPaused;
+    self.activityHandler    = activityHandler;
+    self.loggerMock         = (ADJLoggerMock *)[ADJAdjustFactory logger];
+    self.packageQueue       = [NSMutableArray array];
 
     [self.loggerMock test:[NSString stringWithFormat:@"%@initWithActivityHandler, paused: %d", prefix, startPaused]];
 
