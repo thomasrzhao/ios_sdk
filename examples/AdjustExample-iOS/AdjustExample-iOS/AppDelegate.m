@@ -35,6 +35,9 @@
     // send in the background
     //[adjustConfig setSendInBackground:YES];
 
+    // delay the first session of the SDK
+    //[adjustConfig setDelayStart:7];
+
     // set an attribution delegate
     [adjustConfig setDelegate:self];
 

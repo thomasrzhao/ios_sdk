@@ -100,6 +100,8 @@ extern NSString * const ADJEnvironmentProduction;
  */
 + (NSURL*)convertUniversalLink:(NSURL *)url scheme:(NSString *)scheme;
 
++ (void)sendFirstPackages;
+
 + (NSString*)idfa;
 
 /**
