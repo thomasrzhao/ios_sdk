@@ -38,6 +38,7 @@
 		963909A61BCBFF8D00A2E8A4 /* ADJTimerOnce.m in Sources */ = {isa = PBXBuildFile; fileRef = 9639098F1BCBFF8D00A2E8A4 /* ADJTimerOnce.m */; };
 		963909A71BCBFF8D00A2E8A4 /* Adjust.m in Sources */ = {isa = PBXBuildFile; fileRef = 963909911BCBFF8D00A2E8A4 /* Adjust.m */; };
 		963909A81BCBFF8D00A2E8A4 /* ADJUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 963909931BCBFF8D00A2E8A4 /* ADJUtil.m */; };
+		968CD0B31CFC47DD002B515E /* ADJSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 968CD0B21CFC47DD002B515E /* ADJSessionParameters.m */; };
 		96BA940B1C3D57FD00C96245 /* ADJSessionFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 96BA94091C3D57FD00C96245 /* ADJSessionFailure.m */; };
 		96BA940C1C3D57FD00C96245 /* ADJSessionSuccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 96BA940A1C3D57FD00C96245 /* ADJSessionSuccess.m */; };
 		96E423CA1C85F3B50006729A /* ADJEventFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E423C71C85F3B50006729A /* ADJEventFailure.m */; };
@@ -107,6 +108,8 @@
 		963909911BCBFF8D00A2E8A4 /* Adjust.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Adjust.m; sourceTree = "<group>"; };
 		963909921BCBFF8D00A2E8A4 /* ADJUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADJUtil.h; sourceTree = "<group>"; };
 		963909931BCBFF8D00A2E8A4 /* ADJUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADJUtil.m; sourceTree = "<group>"; };
+		968CD0B11CFC47DD002B515E /* ADJSessionParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADJSessionParameters.h; sourceTree = "<group>"; };
+		968CD0B21CFC47DD002B515E /* ADJSessionParameters.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADJSessionParameters.m; sourceTree = "<group>"; };
 		96BA94071C3D57FD00C96245 /* ADJSessionSuccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADJSessionSuccess.h; sourceTree = "<group>"; };
 		96BA94081C3D57FD00C96245 /* ADJSessionFailure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADJSessionFailure.h; sourceTree = "<group>"; };
 		96BA94091C3D57FD00C96245 /* ADJSessionFailure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADJSessionFailure.m; sourceTree = "<group>"; };
@@ -187,6 +190,8 @@
 		963909681BCBFF8D00A2E8A4 /* Adjust */ = {
 			isa = PBXGroup;
 			children = (
+				968CD0B11CFC47DD002B515E /* ADJSessionParameters.h */,
+				968CD0B21CFC47DD002B515E /* ADJSessionParameters.m */,
 				96164D8E1CCA4E1C009431AB /* ADJBackoffStrategy.h */,
 				96164D8F1CCA4E1C009431AB /* ADJBackoffStrategy.m */,
 				96164D901CCA4E1C009431AB /* ADJSdkClickHandler.h */,
@@ -348,6 +353,7 @@
 				963909A61BCBFF8D00A2E8A4 /* ADJTimerOnce.m in Sources */,
 				9DC95F2A1C10515300138E4B /* Constants.m in Sources */,
 				963909951BCBFF8D00A2E8A4 /* ADJActivityKind.m in Sources */,
+				968CD0B31CFC47DD002B515E /* ADJSessionParameters.m in Sources */,
 				9639099A1BCBFF8D00A2E8A4 /* UIDevice+ADJAdditions.m in Sources */,
 				963909971BCBFF8D00A2E8A4 /* ADJActivityState.m in Sources */,
 				96BA940C1C3D57FD00C96245 /* ADJSessionSuccess.m in Sources */,
