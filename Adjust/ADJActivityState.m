@@ -30,8 +30,9 @@ static const int kTransactionIdCount = 10;
     self.lastInterval    = -1;
     self.transactionIds  = [NSMutableArray arrayWithCapacity:kTransactionIdCount];
     self.enabled         = YES;
-    self.askingAttribution           = NO;
+    self.askingAttribution = NO;
     self.deviceToken     = nil;
+    self.updatePackages  = NO;
 
     return self;
 }
@@ -109,7 +110,13 @@ static const int kTransactionIdCount = 10;
     }
 
     if ([decoder containsValueForKey:@"deviceToken"]) {
-        self.deviceToken = [decoder decodeObjectForKey:@"deviceToken"];
+        self.deviceToken        = [decoder decodeObjectForKey:@"deviceToken"];
+    }
+
+    if ([decoder containsValueForKey:@"updatePackages"]) {
+        self.updatePackages     = [decoder decodeBoolForKey:@"updatePackages"];
+    } else {
+        self.updatePackages     = NO;
     }
 
     self.lastInterval = -1;
@@ -129,6 +136,7 @@ static const int kTransactionIdCount = 10;
     [encoder encodeBool:self.enabled           forKey:@"enabled"];
     [encoder encodeBool:self.askingAttribution forKey:@"askingAttribution"];
     [encoder encodeObject:self.deviceToken     forKey:@"deviceToken"];
+    [encoder encodeBool:self.updatePackages    forKey:@"updatePackages"];
 }
 
 -(id)copyWithZone:(NSZone *)zone
@@ -146,6 +154,7 @@ static const int kTransactionIdCount = 10;
         copy.lastActivity      = self.lastActivity;
         copy.askingAttribution = self.askingAttribution;
         copy.deviceToken       = self.deviceToken;
+        copy.updatePackages    = self.updatePackages;
         // transactionIds not copied
     }
     

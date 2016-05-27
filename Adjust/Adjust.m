@@ -24,6 +24,9 @@ NSString * const ADJEnvironmentProduction   = @"production";
 
 @property (nonatomic, retain) id<ADJActivityHandler> activityHandler;
 @property (nonatomic, retain) id<ADJLogger> logger;
+@property (nonatomic, retain) NSMutableArray* sessionCallbackMutableParametersArray;
+@property (nonatomic, retain) NSMutableArray* sessionPartnerMutableParametersArray;
+
 @end
 
 #pragma mark -
@@ -77,6 +80,18 @@ NSString * const ADJEnvironmentProduction   = @"production";
     [[Adjust getInstance] sendFirstPackages];
 }
 
++ (void)addSessionCallbackParameter:(NSString *)key
+                              value:(NSString *)value {
+    [[Adjust getInstance] addSessionCallbackParameter:key value:value];
+
+}
+
++ (void)addSessionPartnerParameter:(NSString *)key
+                             value:(NSString *)value {
+    [[Adjust getInstance] addSessionPartnerParameter:key value:value];
+}
+
+
 + (id)getInstance {
     static Adjust *defaultInstance = nil;
     static dispatch_once_t onceToken;
@@ -103,7 +118,9 @@ NSString * const ADJEnvironmentProduction   = @"production";
         return;
     }
 
-    self.activityHandler = [ADJAdjustFactory activityHandlerWithConfig:adjustConfig];
+    self.activityHandler = [ADJAdjustFactory activityHandlerWithConfig:adjustConfig
+                                        sessionCallbackParametersArray:self.sessionCallbackMutableParametersArray
+                                         sessionPartnerParametersArray:self.sessionPartnerMutableParametersArray];
 }
 
 - (void)trackEvent:(ADJEvent *)event {
@@ -158,6 +175,35 @@ NSString * const ADJEnvironmentProduction   = @"production";
     if (![self checkActivityHandler]) return;
     [self.activityHandler sendFirstPackages];
 }
+
+- (void)addSessionCallbackParameter:(NSString *)key
+                              value:(NSString *)value {
+    if (self.activityHandler != nil) {
+        [self.activityHandler addSessionCallbackParameter:key value:value];
+        return;
+    }
+
+    if (self.sessionCallbackMutableParametersArray == nil) {
+        self.sessionCallbackMutableParametersArray = [[NSMutableArray alloc] init];
+    }
+    NSArray * pair = @[key, value];
+    [self.sessionCallbackMutableParametersArray addObject:pair];
+}
+
+- (void)addSessionPartnerParameter:(NSString *)key
+                             value:(NSString *)value {
+    if (self.activityHandler != nil) {
+        [self.activityHandler addSessionPartnerParameter:key value:value];
+        return;
+    }
+
+    if (self.sessionPartnerMutableParametersArray == nil) {
+        self.sessionPartnerMutableParametersArray = [[NSMutableArray alloc] init];
+    }
+    NSArray * pair = @[key, value];
+    [self.sessionPartnerMutableParametersArray addObject:pair];
+}
+
 
 #pragma mark - private
 

@@ -100,9 +100,16 @@ extern NSString * const ADJEnvironmentProduction;
  */
 + (NSURL*)convertUniversalLink:(NSURL *)url scheme:(NSString *)scheme;
 
++ (NSString*)idfa;
+
 + (void)sendFirstPackages;
 
-+ (NSString*)idfa;
++ (void)addSessionCallbackParameter:(NSString *)key
+                              value:(NSString *)value;
+
++ (void)addSessionPartnerParameter:(NSString *)key
+                             value:(NSString *)value;
+
 
 /**
  * Obtain singleton Adjust object
@@ -120,5 +127,10 @@ extern NSString * const ADJEnvironmentProduction;
 - (void)setOfflineMode:(BOOL)enabled;
 - (NSURL*)convertUniversalLink:(NSURL *)url scheme:(NSString *)scheme;
 - (NSString*)idfa;
+- (void)sendFirstPackages;
+- (void)addSessionCallbackParameter:(NSString *)key
+                              value:(NSString *)value;
+- (void)addSessionPartnerParameter:(NSString *)key
+                             value:(NSString *)value;
 
 @end

@@ -14,6 +14,7 @@
 @property (nonatomic, assign) BOOL enabled;
 @property (nonatomic, assign) BOOL askingAttribution;
 @property (nonatomic, copy) NSString *deviceToken;
+@property (nonatomic, assign) BOOL updatePackages;
 
 // global counters
 @property (nonatomic, assign) int eventCount;

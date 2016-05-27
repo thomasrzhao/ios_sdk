@@ -11,6 +11,7 @@
 #import "ADJUtil.h"
 #import "ADJAttribution.h"
 #import "NSData+ADJAdditions.h"
+#import "ADJAdjustFactory.h"
 
 @interface ADJPackageBuilder()
 
@@ -40,10 +41,15 @@
     return self;
 }
 
-- (ADJActivityPackage *)buildSessionPackage {
+- (ADJActivityPackage *)buildSessionPackage:(BOOL)isInDelay
+{
     NSMutableDictionary *parameters = [self defaultParameters];
     [ADJPackageBuilder parameters:parameters setDuration:self.activityState.lastInterval forKey:@"last_interval"];
     [ADJPackageBuilder parameters:parameters setString:self.adjustConfig.defaultTracker forKey:@"default_tracker"];
+    if (!isInDelay) {
+        [ADJPackageBuilder parameters:parameters setDictionary:self.sessionCallbackParameters forKey:@"callback_params"];
+        [ADJPackageBuilder parameters:parameters setDictionary:self.sessionPartnerParameters forKey:@"partner_params"];
+    }
     ADJActivityPackage *sessionPackage = [self defaultActivityPackage];
     sessionPackage.path = @"/session";
     sessionPackage.activityKind = ADJActivityKindSession;
@@ -53,16 +59,25 @@
     return sessionPackage;
 }
 
-- (ADJActivityPackage *)buildEventPackage:(ADJEvent *) event{
+- (ADJActivityPackage *)buildEventPackage:(ADJEvent *)event
+                                isInDelay:(BOOL)isInDelay
+{
     NSMutableDictionary *parameters = [self defaultParameters];
     [ADJPackageBuilder parameters:parameters setInt:self.activityState.eventCount forKey:@"event_count"];
     [ADJPackageBuilder parameters:parameters setNumber:event.revenue forKey:@"revenue"];
     [ADJPackageBuilder parameters:parameters setString:event.currency forKey:@"currency"];
     [ADJPackageBuilder parameters:parameters setString:event.eventToken forKey:@"event_token"];
 
-    [ADJPackageBuilder parameters:parameters setDictionary:event.callbackParameters forKey:@"callback_params"];
-    [ADJPackageBuilder parameters:parameters setDictionary:event.partnerParameters forKey:@"partner_params"];
-
+    if (!isInDelay) {
+        NSDictionary * mergedCallbackParameters = [ADJUtil mergeParameters:self.sessionCallbackParameters
+                                                                    source:event.callbackParameters
+                                                             parameterName:@"Callback"];
+        NSDictionary * mergedPartnerParameters = [ADJUtil mergeParameters:self.sessionPartnerParameters
+                                                                   source:event.partnerParameters
+                                                            parameterName:@"Partner"];
+        [ADJPackageBuilder parameters:parameters setDictionary:mergedCallbackParameters forKey:@"callback_params"];
+        [ADJPackageBuilder parameters:parameters setDictionary:mergedPartnerParameters forKey:@"partner_params"];
+    }
     if (event.emptyReceipt) {
         NSString *emptyReceipt = @"empty";
         [ADJPackageBuilder parameters:parameters setString:emptyReceipt forKey:@"receipt"];
@@ -79,6 +94,11 @@
     eventPackage.activityKind = ADJActivityKindEvent;
     eventPackage.suffix = [self eventSuffix:event];
     eventPackage.parameters = parameters;
+
+    if (isInDelay) {
+        eventPackage.callbackParameters = event.callbackParameters;
+        eventPackage.partnerParameters = event.partnerParameters;
+    }
 
     return eventPackage;
 }
@@ -281,4 +301,3 @@
 }
 
 @end
-

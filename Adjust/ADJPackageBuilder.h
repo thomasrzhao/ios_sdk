@@ -21,15 +21,20 @@
 @property (nonatomic, retain) NSDictionary* deeplinkParameters;
 @property (nonatomic, copy) NSString *deeplink;
 @property (nonatomic, copy) NSString *deviceToken;
+@property (nonatomic, retain) NSDictionary* sessionCallbackParameters;
+@property (nonatomic, retain) NSDictionary* sessionPartnerParameters;
 
 - (id) initWithDeviceInfo:(ADJDeviceInfo *)deviceInfo
             activityState:(ADJActivityState *)activityState
                    config:(ADJConfig *)adjustConfig
                 createdAt:(double)createdAt;
 
-- (ADJActivityPackage *)buildSessionPackage;
-- (ADJActivityPackage *)buildEventPackage:(ADJEvent *)event;
+- (ADJActivityPackage *)buildSessionPackage:(BOOL)isInDelay;
+- (ADJActivityPackage *)buildEventPackage:(ADJEvent *)event
+                                isInDelay:(BOOL)isInDelay;
 - (ADJActivityPackage *)buildClickPackage:(NSString *)clickSource;
 - (ADJActivityPackage *)buildAttributionPackage;
+
++ (void)parameters:(NSMutableDictionary *)parameters setDictionary:(NSDictionary *)dictionary forKey:(NSString *)key;
 
 @end
