@@ -105,11 +105,18 @@ extern NSString * const ADJEnvironmentProduction;
 + (void)sendFirstPackages;
 
 + (void)addSessionCallbackParameter:(NSString *)key
-                              value:(NSString *)value;
+                                    value:(NSString *)value;
 
 + (void)addSessionPartnerParameter:(NSString *)key
-                             value:(NSString *)value;
+                                   value:(NSString *)value;
 
++ (void)removeSessionCallbackParameter:(NSString *)key;
+
++ (void)removeSessionPartnerParameter:(NSString *)key;
+
++ (void)resetSessionCallbackParameters;
+
++ (void)resetSessionPartnerParameters;
 
 /**
  * Obtain singleton Adjust object
@@ -132,5 +139,9 @@ extern NSString * const ADJEnvironmentProduction;
                               value:(NSString *)value;
 - (void)addSessionPartnerParameter:(NSString *)key
                              value:(NSString *)value;
+- (void)removeSessionCallbackParameter:(NSString *)key;
+- (void)removeSessionPartnerParameter:(NSString *)key;
+- (void)resetSessionCallbackParameters;
+- (void)resetSessionPartnerParameters;
 
 @end
