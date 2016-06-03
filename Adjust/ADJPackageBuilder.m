@@ -15,9 +15,9 @@
 
 @interface ADJPackageBuilder()
 
-@property (nonatomic, copy) ADJDeviceInfo* deviceInfo;
+@property (nonatomic, weak) ADJDeviceInfo* deviceInfo;
 @property (nonatomic, copy) ADJActivityState *activityState;
-@property (nonatomic, copy) ADJConfig *adjustConfig;
+@property (nonatomic, weak) ADJConfig *adjustConfig;
 @property (nonatomic, assign) double createdAt;
 
 @end

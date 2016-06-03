@@ -18,8 +18,8 @@
 @property (nonatomic, copy) ADJAttribution *attribution;
 @property (nonatomic, copy) NSDate *purchaseTime;
 @property (nonatomic, copy) NSDate *clickTime;
-@property (nonatomic, retain) NSDictionary *iadDetails;
-@property (nonatomic, retain) NSDictionary* deeplinkParameters;
+@property (nonatomic, strong) NSDictionary *iadDetails;
+@property (nonatomic, strong) NSDictionary* deeplinkParameters;
 @property (nonatomic, copy) NSString *deeplink;
 @property (nonatomic, copy) NSString *deviceToken;
 
