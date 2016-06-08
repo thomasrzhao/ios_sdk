@@ -79,8 +79,8 @@ NSString * const ADJEnvironmentProduction   = @"production";
     [[Adjust getInstance] sendFirstPackages];
 }
 
-+ (void)addCustomUserId:(NSString *)customUserId {
-    [[Adjust getInstance] addCustomUserId:customUserId];
++ (void)addExternalDeviceId:(NSString *)externalDeviceId {
+    [[Adjust getInstance] addExternalDeviceId:externalDeviceId];
 }
 
 + (void)addSessionCallbackParameter:(NSString *)key
@@ -103,8 +103,8 @@ NSString * const ADJEnvironmentProduction   = @"production";
     [[Adjust getInstance] removeSessionPartnerParameter:key];
 }
 
-+ (void)resetCustomUserId {
-    [[Adjust getInstance] resetCustomUserId];
++ (void)resetExternalDeviceId {
+    [[Adjust getInstance] resetExternalDeviceId];
 }
 
 + (void)resetSessionCallbackParameters {
@@ -198,9 +198,9 @@ NSString * const ADJEnvironmentProduction   = @"production";
     [self.activityHandler sendFirstPackages];
 }
 
-- (void)addCustomUserId:(NSString *)customUserId {
+- (void)addExternalDeviceId:(NSString *)externalDeviceId {
     if (self.activityHandler != nil) {
-        [self.activityHandler addCustomUserId:customUserId];
+        [self.activityHandler addExternalDeviceId:externalDeviceId];
         return;
     }
 
@@ -209,7 +209,7 @@ NSString * const ADJEnvironmentProduction   = @"production";
     }
 
     [self.sessionParametersActionsArray addObject:^(ADJActivityHandler * activityHandler){
-        [activityHandler addCustomUserIdI:activityHandler customUserId:customUserId];
+        [activityHandler addExternalDeviceIdI:activityHandler externalDeviceId:externalDeviceId];
     }];
 }
 
@@ -275,9 +275,9 @@ NSString * const ADJEnvironmentProduction   = @"production";
     }];
 }
 
-- (void)resetCustomUserId {
+- (void)resetExternalDeviceId {
     if (self.activityHandler != nil) {
-        [self.activityHandler resetCustomUserId];
+        [self.activityHandler resetExternalDeviceId];
         return;
     }
 
@@ -286,7 +286,7 @@ NSString * const ADJEnvironmentProduction   = @"production";
     }
 
     [self.sessionParametersActionsArray addObject:^(ADJActivityHandler * activityHandler){
-        [activityHandler resetCustomUserIdI:activityHandler];
+        [activityHandler resetExternalDeviceIdI:activityHandler];
     }];
 }
 

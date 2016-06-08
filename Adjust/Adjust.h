@@ -104,7 +104,7 @@ extern NSString * const ADJEnvironmentProduction;
 
 + (void)sendFirstPackages;
 
-+ (void)addCustomUserId:(NSString *)customUserId;
++ (void)addExternalDeviceId:(NSString *)externalDeviceId;
 
 + (void)addSessionCallbackParameter:(NSString *)key
                                     value:(NSString *)value;
@@ -116,7 +116,7 @@ extern NSString * const ADJEnvironmentProduction;
 
 + (void)removeSessionPartnerParameter:(NSString *)key;
 
-+ (void)resetCustomUserId;
++ (void)resetExternalDeviceId;
 
 + (void)resetSessionCallbackParameters;
 
@@ -139,14 +139,14 @@ extern NSString * const ADJEnvironmentProduction;
 - (NSURL*)convertUniversalLink:(NSURL *)url scheme:(NSString *)scheme;
 - (NSString*)idfa;
 - (void)sendFirstPackages;
-- (void)addCustomUserId:(NSString *)customUserId;
+- (void)addExternalDeviceId:(NSString *)externalDeviceId;
 - (void)addSessionCallbackParameter:(NSString *)key
                               value:(NSString *)value;
 - (void)addSessionPartnerParameter:(NSString *)key
                              value:(NSString *)value;
 - (void)removeSessionCallbackParameter:(NSString *)key;
 - (void)removeSessionPartnerParameter:(NSString *)key;
-- (void)resetCustomUserId;
+- (void)resetExternalDeviceId;
 - (void)resetSessionCallbackParameters;
 - (void)resetSessionPartnerParameters;
 - (void)teardown:(BOOL)deleteState;
