@@ -160,7 +160,7 @@
     [self injectDeviceInfoIds:self.deviceInfo
                intoParameters:parameters];
     [self injectConfig:self.adjustConfig intoParameters:parameters];
-    [self injectCreatedAt:self.createdAt intoParameters:parameters];
+    [self injectCommonParameters:parameters];
 
     return parameters;
 }
@@ -172,9 +172,14 @@
             intoParameters:parameters];
     [self injectConfig:self.adjustConfig intoParameters:parameters];
     [self injectActivityState:self.activityState intoParamters:parameters];
-    [self injectCreatedAt:self.createdAt intoParameters:parameters];
+    [self injectCommonParameters:parameters];
 
     return parameters;
+}
+
+- (void)injectCommonParameters:(NSMutableDictionary *)parameters {
+    [ADJPackageBuilder parameters:parameters setDate1970:self.createdAt forKey:@"created_at"];
+    [ADJPackageBuilder parameters:parameters setBool:YES forKey:@"attribution_deeplink"];
 }
 
 - (void) injectDeviceInfoIds:(ADJDeviceInfo *)deviceInfo
@@ -222,12 +227,6 @@
     [ADJPackageBuilder parameters:parameters setDuration:activityState.timeSpent     forKey:@"time_spent"];
     [ADJPackageBuilder parameters:parameters setString:activityState.uuid            forKey:@"ios_uuid"];
 
-}
-
-- (void)injectCreatedAt:(double) createdAt
-      intoParameters:(NSMutableDictionary *) parameters
-{
-    [ADJPackageBuilder parameters:parameters setDate1970:createdAt forKey:@"created_at"];
 }
 
 - (NSString *)eventSuffix:(ADJEvent*)event {
