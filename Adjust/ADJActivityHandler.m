@@ -1521,7 +1521,7 @@ sdkClickHandlerOnly:(BOOL)sdkClickHandlerOnly
                      parameterName:@"Session Callback"]) return;
 
     if (selfI.sessionParameters.callbackParameters == nil) {
-        [selfI.logger warn:@"Key %@ does not exist", key];
+        [selfI.logger warn:@"Session Callback parameters is not set"];
         return;
     }
 
@@ -1531,7 +1531,7 @@ sdkClickHandlerOnly:(BOOL)sdkClickHandlerOnly
         return;
     }
 
-    [selfI.logger debug:@"Key %@ eliminated", key];
+    [selfI.logger debug:@"Key %@ will be removed", key];
     [selfI.sessionParameters.callbackParameters removeObjectForKey:key];
     [selfI writeSessionCallbackParametersI:selfI];
 }
@@ -1543,7 +1543,7 @@ sdkClickHandlerOnly:(BOOL)sdkClickHandlerOnly
                      parameterName:@"Session Partner"]) return;
 
     if (selfI.sessionParameters.partnerParameters == nil) {
-        [selfI.logger warn:@"Key %@ does not exist", key];
+        [selfI.logger warn:@"Session Partner parameters is not set"];
         return;
     }
 
@@ -1553,14 +1553,14 @@ sdkClickHandlerOnly:(BOOL)sdkClickHandlerOnly
         return;
     }
 
-    [selfI.logger debug:@"key %@ eliminated", key];
+    [selfI.logger debug:@"key %@ will be removed", key];
     [selfI.sessionParameters.partnerParameters removeObjectForKey:key];
     [selfI writeSessionPartnerParametersI:selfI];
 }
 
 - (void)resetExternalDeviceIdI:(ADJActivityHandler *)selfI {
     if (selfI.sessionParameters.externalDeviceId == nil) {
-        [selfI.logger warn:@"External Device Id already reset"];
+        [selfI.logger warn:@"External Device Id is not set"];
         return;
     }
     selfI.sessionParameters.externalDeviceId = nil;
@@ -1569,7 +1569,7 @@ sdkClickHandlerOnly:(BOOL)sdkClickHandlerOnly
 
 - (void)resetSessionCallbackParametersI:(ADJActivityHandler *)selfI {
     if (selfI.sessionParameters.callbackParameters == nil) {
-        [selfI.logger warn:@"Session Callback parameters already reset"];
+        [selfI.logger warn:@"Session Callback parameters is not set"];
         return;
     }
     selfI.sessionParameters.callbackParameters = nil;
@@ -1578,7 +1578,7 @@ sdkClickHandlerOnly:(BOOL)sdkClickHandlerOnly
 
 - (void)resetSessionPartnerParametersI:(ADJActivityHandler *)selfI {
     if (selfI.sessionParameters.partnerParameters == nil) {
-        [selfI.logger warn:@"Session Partner parameters already reset"];
+        [selfI.logger warn:@"Session Partner parameters is not set"];
         return;
     }
     selfI.sessionParameters.partnerParameters = nil;
