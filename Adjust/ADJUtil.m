@@ -24,6 +24,8 @@ static NSRegularExpression *universalLinkRegex      = nil;
 static NSNumberFormatter *secondsNumberFormatter    = nil;
 
 static NSString * const kClientSdk              = @"ios4.7.1";
+static NSString * const kDeeplinkParam          = @"deep_link=";
+static NSString * const kSchemeDelimiter        = @"://";
 static NSString * const kDefaultScheme          = @"AdjustUniversalScheme";
 static NSString * const kUniversalLinkPattern   = @"https://[^.]*\\.ulink\\.adjust\\.com/ulink/?(.*)";
 static NSString * const kBaseUrl                = @"https://app.adjust.com";
@@ -524,8 +526,42 @@ responseDataHandler:(void (^)(ADJResponseData *responseData))responseDataHandler
         return nil;
     }
 
-    NSString *tailSubString = [urlString substringWithRange:[match rangeAtIndex:1]];
-    NSString *extractedUrlString = [NSString stringWithFormat:@"%@://%@", scheme, tailSubString];
+    // Universal link contains adjust_redirect parameter which contains URL encoded
+    // old style tracker URL which contains URL encoded deeplink parameter.
+    // In oder to extract value of deeplink parameter we need to:
+    // 1: URL decode given universal link
+    // 2: URL decode decoded universal link
+    // 3: Extract value of deeplink parameter from resulting decoded URL
+    NSString *ulinkDecodedOnce = [urlString adjUrlDecode];
+    NSString *ulinkDecodedTwice = [ulinkDecodedOnce adjUrlDecode];
+    NSUInteger slDeeplink = [ulinkDecodedTwice rangeOfString:kDeeplinkParam].location + [kDeeplinkParam length];
+    NSUInteger elDeeplink = ulinkDecodedTwice.length - slDeeplink;
+    NSString *deeplinkValue = [ulinkDecodedTwice substringWithRange: NSMakeRange(slDeeplink, elDeeplink)];
+
+    NSArray *deeplinkParts = [deeplinkValue componentsSeparatedByCharactersInSet:
+                              [NSCharacterSet characterSetWithCharactersInString:kSchemeDelimiter]];
+
+    if (deeplinkParts == nil) {
+        [logger error:@"Deeplink value doesn't contain proper delimiter (%@)", kSchemeDelimiter];
+        return nil;
+    }
+
+    if ([deeplinkParts count] < 2) {
+        [logger error:@"Deeplink value doesn't contain proper delimiter (%@)", kSchemeDelimiter];
+        return nil;
+    }
+
+    NSString *extractedUrlString;
+    NSString *originalScheme = [deeplinkParts objectAtIndex:0];
+    NSString *deeplinkContent = [deeplinkParts objectAtIndex:1];
+
+    if ([originalScheme isEqualToString:scheme]) {
+        [logger debug:@"Found deeplink scheme and the one you passed are the same"];
+        extractedUrlString = deeplinkValue;
+    } else {
+        [logger debug:@"Replacing found scheme named '%@' with '%@'", originalScheme, scheme];
+        extractedUrlString = [NSString stringWithFormat:@"%@%@%@", scheme, kSchemeDelimiter, deeplinkContent];
+    }
 
     [logger info:@"Converted deeplink from universal link %@", extractedUrlString];
 
@@ -690,7 +726,7 @@ responseDataHandler:(void (^)(ADJResponseData *responseData))responseDataHandler
         [ADJAdjustFactory.logger verbose:@"File %@ does not exist at path %@", filename, filepath];
         return YES;
     }
-    
+
     BOOL deleted = [fileManager removeItemAtPath:filepath error:&error];
 
     if (!deleted) {
