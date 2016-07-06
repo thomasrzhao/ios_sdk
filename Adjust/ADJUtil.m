@@ -21,13 +21,18 @@ static const double kRequestTimeout = 60;   // 60 seconds
 
 static NSDateFormatter *dateFormat;
 static NSRegularExpression *universalLinkRegex      = nil;
+static NSRegularExpression *optionalRedirectRegex   = nil;
+
 static NSNumberFormatter *secondsNumberFormatter    = nil;
 
 static NSString * const kClientSdk              = @"ios4.7.1";
 static NSString * const kDeeplinkParam          = @"deep_link=";
 static NSString * const kSchemeDelimiter        = @"://";
 static NSString * const kDefaultScheme          = @"AdjustUniversalScheme";
-static NSString * const kUniversalLinkPattern   = @"https://[^.]*\\.ulink\\.adjust\\.com/ulink/?(.*)";
+static NSString * const kUniversalLinkPattern   = @"^https://[^.]*\\.ulink\\.adjust\\.com/ulink/?(.*)$";
+//static NSString * const kOptionalRedirectPattern = @"^[^?]*?\?(adjust_redirect=[^&#]*)(#.*)?$";
+static NSString * const kOptionalRedirectPattern = @"adjust_redirect=[^&#]*";
+
 static NSString * const kBaseUrl                = @"https://app.adjust.com";
 static NSString * const kDateFormat             = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
 
@@ -505,63 +510,32 @@ responseDataHandler:(void (^)(ADJResponseData *responseData))responseDataHandler
         universalLinkRegex = regex;
     }
 
-    NSArray<NSTextCheckingResult *> *matches = [universalLinkRegex matchesInString:urlString
+    NSArray<NSTextCheckingResult *> *universalLinkMatches = [universalLinkRegex matchesInString:urlString
                                                                            options:0
                                                                              range:NSMakeRange(0, [urlString length])];
 
-    if ([matches count] == 0) {
+    if ([universalLinkMatches count] == 0) {
         [logger error:@"Url doesn't match as universal link with format https://[hash].ulink.adjust.com/ulink/..."];
         return nil;
     }
 
-    if ([matches count] > 1) {
+    if ([universalLinkMatches count] > 1) {
         [logger error:@"Url match as universal link multiple times"];
         return nil;
     }
 
-    NSTextCheckingResult *match = matches[0];
+    NSTextCheckingResult *universalLinkmatch = universalLinkMatches[0];
 
-    if ([match numberOfRanges] != 2) {
+    if ([universalLinkmatch numberOfRanges] != 2) {
         [logger error:@"Wrong number of ranges matched"];
         return nil;
     }
 
-    // Universal link contains adjust_redirect parameter which contains URL encoded
-    // old style tracker URL which contains URL encoded deeplink parameter.
-    // In oder to extract value of deeplink parameter we need to:
-    // 1: URL decode given universal link
-    // 2: URL decode decoded universal link
-    // 3: Extract value of deeplink parameter from resulting decoded URL
-    NSString *ulinkDecodedOnce = [urlString adjUrlDecode];
-    NSString *ulinkDecodedTwice = [ulinkDecodedOnce adjUrlDecode];
-    NSUInteger slDeeplink = [ulinkDecodedTwice rangeOfString:kDeeplinkParam].location + [kDeeplinkParam length];
-    NSUInteger elDeeplink = ulinkDecodedTwice.length - slDeeplink;
-    NSString *deeplinkValue = [ulinkDecodedTwice substringWithRange: NSMakeRange(slDeeplink, elDeeplink)];
+    NSString *tailSubString = [urlString substringWithRange:[universalLinkmatch rangeAtIndex:1]];
 
-    NSArray *deeplinkParts = [deeplinkValue componentsSeparatedByCharactersInSet:
-                              [NSCharacterSet characterSetWithCharactersInString:kSchemeDelimiter]];
+    NSString *finalTailSubString = [ADJUtil removeOptionalRedirect:tailSubString];
 
-    if (deeplinkParts == nil) {
-        [logger error:@"Deeplink value doesn't contain proper delimiter (%@)", kSchemeDelimiter];
-        return nil;
-    }
-
-    if ([deeplinkParts count] < 2) {
-        [logger error:@"Deeplink value doesn't contain proper delimiter (%@)", kSchemeDelimiter];
-        return nil;
-    }
-
-    NSString *extractedUrlString;
-    NSString *originalScheme = [deeplinkParts objectAtIndex:0];
-    NSString *deeplinkContent = [deeplinkParts objectAtIndex:1];
-
-    if ([originalScheme isEqualToString:scheme]) {
-        [logger debug:@"Found deeplink scheme and the one you passed are the same"];
-        extractedUrlString = deeplinkValue;
-    } else {
-        [logger debug:@"Replacing found scheme named '%@' with '%@'", originalScheme, scheme];
-        extractedUrlString = [NSString stringWithFormat:@"%@%@%@", scheme, kSchemeDelimiter, deeplinkContent];
-    }
+    NSString *extractedUrlString = [NSString stringWithFormat:@"%@://%@", scheme, finalTailSubString];
 
     [logger info:@"Converted deeplink from universal link %@", extractedUrlString];
 
@@ -573,6 +547,84 @@ responseDataHandler:(void (^)(ADJResponseData *responseData))responseDataHandler
     }
 
     return extractedUrl;
+}
+
++ (NSString *)removeOptionalRedirect:(NSString *)tailSubString {
+    id<ADJLogger> logger = ADJAdjustFactory.logger;
+
+    if (optionalRedirectRegex == nil) {
+        NSError *error = NULL;
+
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:kOptionalRedirectPattern
+                                                                               options:NSRegularExpressionCaseInsensitive
+                                                                                 error:&error];
+
+        if ([ADJUtil isNotNull:error]) {
+            [logger error:@"Optional redirect regex rule error (%@)", [error description]];
+            return tailSubString;
+        }
+
+        optionalRedirectRegex = regex;
+    }
+
+    NSArray<NSTextCheckingResult *> *optionalRedirectmatches = [optionalRedirectRegex matchesInString:tailSubString
+                                                                                              options:0
+                                                                                                range:NSMakeRange(0, [tailSubString length])];
+
+    if ([optionalRedirectmatches count] == 0) {
+        [logger debug:@"Universal link does not contain option adjust_redirect parameter"];
+        return tailSubString;
+    }
+
+    if ([optionalRedirectmatches count] > 1) {
+        [logger error:@"Universal link contains multiple option adjust_redirect parameters"];
+        return tailSubString;
+    }
+
+    NSTextCheckingResult *redirectMatch = optionalRedirectmatches[0];
+
+    NSRange redirectRange = [redirectMatch rangeAtIndex:0];
+
+    NSString *beforeRedirect = [tailSubString substringToIndex:redirectRange.location];
+    NSString *afterRedirect = [tailSubString substringFromIndex:(redirectRange.location + redirectRange.length)];
+
+    if (beforeRedirect.length > 0 &&
+        afterRedirect.length > 0)
+    {
+        NSString *lastCharacterBeforeRedirect = [beforeRedirect substringFromIndex:beforeRedirect.length - 1];
+        NSString *firstCharacterAfterRedirect = [afterRedirect substringToIndex:1];
+
+        if ([@"&" isEqualToString:lastCharacterBeforeRedirect] &&
+            [@"&" isEqualToString:firstCharacterAfterRedirect])
+        {
+            beforeRedirect = [beforeRedirect
+                              substringToIndex:beforeRedirect.length - 1];
+        }
+
+        if ([@"&" isEqualToString:lastCharacterBeforeRedirect] &&
+            [@"#" isEqualToString:firstCharacterAfterRedirect])
+        {
+            beforeRedirect = [beforeRedirect
+                              substringToIndex:beforeRedirect.length - 1];
+        }
+
+        if ([@"?" isEqualToString:lastCharacterBeforeRedirect] &&
+            [@"#" isEqualToString:firstCharacterAfterRedirect])
+        {
+            beforeRedirect = [beforeRedirect
+                              substringToIndex:beforeRedirect.length - 1];
+        }
+
+        if ([@"?" isEqualToString:lastCharacterBeforeRedirect] &&
+            [@"&" isEqualToString:firstCharacterAfterRedirect])
+        {
+            afterRedirect = [afterRedirect substringFromIndex:1];
+        }
+
+    }
+    NSString * removedRedirect = [NSString stringWithFormat:@"%@%@", beforeRedirect, afterRedirect];
+
+    return removedRedirect;
 }
 
 + (NSString *)secondsNumberFormat:(double)seconds {
